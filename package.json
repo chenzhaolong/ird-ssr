@@ -1,0 +1,22 @@
+{
+  "name": "vue-ssr-template",
+  "version": "1.0.0",
+  "description": "vue-ssr-template",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chenzhaolong/vue-ssr-template.git"
+  },
+  "keywords": [
+    "vue-ssr-template"
+  ],
+  "author": "dragonchen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chenzhaolong/vue-ssr-template/issues"
+  },
+  "homepage": "https://github.com/chenzhaolong/vue-ssr-template#readme"
+}
