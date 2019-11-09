@@ -1,0 +1,62 @@
+{
+  "extends": "airbnb", //启用规则
+  "plugins": [
+    "html",
+    "standard",
+    "promise"
+  ],    //EsLint允许使用第三方插件
+  "parser": "babel-eslint",//EsLint默认使用esprima做脚本解析，当然你也切换他，比如切换成babel-eslint解析
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "jsx": true,
+      "globalReturn": true
+    }
+  },
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true,
+    "jquery": true,
+    "mocha": true
+  },
+  "rules": {
+    "indent": ["error", 2], // 代码缩进
+    "no-param-reassign": ["error", {"props": false}], //禁止对 function 的参数进行重新赋值
+    "no-undef": 0,                //禁用未声明的变量
+    "no-console": 0,                //禁止使用console
+    "no-debugger": 1,              //禁止使用debugger
+    "import/extensions": 0,    //取消对文件扩展名的验证
+    "import/no-unresolved": 0,  //取消自动解析路径，以此开启alias的别名路径设置
+    "import/no-named-as-default": 0,    //使用导出名称作为默认导出标识符的报告
+    "import/first": 0,                  //带变量名的必须放在头部
+    "no-var": 1,                        //禁用var，用let和const代替
+    "no-unused-expressions": 0,    //禁止无用的表达式
+    "semi": [1, "always"],      //语句强制分号结尾
+    "no-trailing-spaces": 0,        //一行结束后面不要有空格
+    "eol-last": 0,                  //文件以单一的换行符结束
+    "no-restricted-syntax": 0,      //禁用特定的语法
+    "max-len": [0, 80, 4],          //字符串最大长度
+    "no-plusplus": 0,              //禁止使用++，--
+    "consistent-return": 0,    //return 后面是否允许省略
+    "no-tabs": "off",       //此规则在文件内的任何位置查找制表符：代码，注释或其他任何内容
+    "eqeqeq": 0,                        //比较用 === 或 !==
+    "import/no-named-as-default-member": 0,
+    "prefer-destructuring": ["error", {"object": false, "array": false}],//此规则强制使用解构而不是通过成员表达式访问属性。
+    "no-underscore-dangle": 0,  //标识符不能以_开头或结尾
+    "no-restricted-properties": [2,{"object": "require","message": "Please call require() directly."
+    } ],
+    "no-alert": 0,                  //禁止使用alert
+    "global-require": 0,        //此规则要求所有调用require()都位于模块的顶层
+    "no-lone-blocks": 0,          //禁止不必要的嵌套块
+    "no-unused-vars": ["error", {
+      "vars": "all",
+      "args": "none"
+    }
+    ]                            //不能有声明后未被使用的变量或参数
+  },
+  "globals": {},                //指定你所要使用的全局变量
+  "settings": {}
+}
