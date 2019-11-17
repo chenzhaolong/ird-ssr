@@ -4,7 +4,7 @@
 
 import axios from 'axios/index';
 
-export default class baseCgi {
+export default class BaseCgi {
   constructor() {
     this.method = '';
     this.url = '';
