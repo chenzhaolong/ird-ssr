@@ -1,5 +1,5 @@
 /**
- * @file 异步服务基类
+ * @file 异步服务基类-使用在client和server
  */
 
 import axios from 'axios/index';
@@ -7,18 +7,12 @@ import axios from 'axios/index';
 export default class BaseCgi {
   constructor() {
     this.method = '';
-    this.url = '';
+    this.domain = '';
     this.headers = {};
     this.body = {};
     this.query = {};
+    this.validCode = [];
   }
-
-  /**
-   * 决定当前请求的域名
-   * @param {string} baseURL 域名地址
-   * @void
-   */
-  domain(baseURL) {}
 
   /**
    * get请求
@@ -83,5 +77,5 @@ export default class BaseCgi {
    * @param {object} params 头部信息
    * @return {object}
    */
-  headers(params) {}
+  setHeaders(params) {}
 }
