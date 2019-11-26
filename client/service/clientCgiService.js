@@ -5,23 +5,17 @@
  *     domain?: ''
  *     headers: {},
  *     body: {},
- *     mutation: string
+ *     interceptors: request | response | both
  * }
  */
+import axios from 'axios';
+import { get, set, isObject, omit } from 'lodash';
 
-import BaseCgi from '../../tools/baseCgi';
-import { get } from 'lodash';
-
-const Env = require('../../config/env');
-
-const validCode = [200];
+const clientEnv = require('../../config/env').client;
 
 class ClientCgi {
-  constructor(baseCgi) {
-    this.baseCgi = baseCgi;
-    this.baseCgi.validCode = validCode;
-    this.baseCgi.domain = this.getDomain();
-    this.baseCgi.headers = {};
+  constructor() {
+    this.validCode = clientEnv.validCode;
   }
 
   /**
@@ -30,89 +24,114 @@ class ClientCgi {
    */
   getDomain() {
     if (process.env.NODE_ENV === 'production') {
-      return Env.client.domain.prod;
+      return clientEnv.domain.prod;
     } else {
-      return Env.client.domain.test;
+      return clientEnv.domain.test;
     }
+  }
+
+  /**
+   * 设置全局的请求头--包括自定义请求头
+   */
+  setCommonHeader(headers) {
+    return headers;
   }
 
   /**
    * get请求的方式
    * @param {object} cgi
+   * @param {object} extra
    * @return {Promise}
    */
-  get(cgi) {
-    const { url, domain, headers, body, mutation } = cgi;
+  get(cgi, extra = {}) {
+    const { url, domain, headers, body } = cgi;
     if (!url) {
       return Promise.reject('请输入正确的url');
     }
-    if (domain) {
-      this.baseCgi.domain = domain;
-    }
-    const request = this.baseCgi.get(url).query(body);
+    let config = {
+      method: 'get',
+      url: url,
+    };
+    config.baseURL = domain ? domain : this.getDomain();
+    config.timeout = clientEnv.timeout;
+    config.responseType = 'json';
 
-    if (headers && Object.keys(headers).length > 0) {
-      request.setHeader(headers);
+    if (body && isObject(body) && Object.keys(body).length > 0) {
+      config.params = body;
     }
-    return request
-      .then(result => {
-        let data = get(result, Env.client.respondKey, {});
-        if (mutation) {
-          this.commit(mutation, data);
-        }
-        return data;
-      })
-      .catch(e => {
-        throw new Error(e);
-      });
+
+    if (headers && isObject(headers) && Object.keys(headers).length > 0) {
+      config.headers = headers;
+    }
+    config.headers = this.setCommonHeader(config.headers);
+
+    if (extra && isObject(extra) && Object.keys(extra).length > 0) {
+      config = { ...config, ...extra };
+    }
+
+    return this.request(config);
   }
 
   /**
    * post请求的方式
    * @param {object} cgi
+   * @param {object} extra
    * @return {Promise}
    */
-  post(cgi) {
-    const { url, domain, headers, body, mutation } = cgi;
+  post(cgi, extra) {
+    const { url, domain, headers, body } = cgi;
     if (!url) {
       return Promise.reject('请输入正确的url');
     }
-    if (domain) {
-      this.baseCgi.domain = domain;
-    }
-    const request = this.baseCgi.post(url).body(body);
+    let config = {
+      method: 'post',
+      url: url,
+    };
+    config.baseURL = domain ? domain : this.getDomain();
+    config.timeout = clientEnv.timeout;
+    config.responseType = 'json';
 
-    if (headers && Object.keys(headers).length > 0) {
-      request.setHeader(headers);
+    if (body && isObject(body) && Object.keys(body).length > 0) {
+      config.data = body;
     }
-    return request
-      .then(result => {
-        let data = get(result, Env.client.respondKey, {});
-        if (mutation) {
-          this.commit(mutation, data);
-        }
-        return data;
-      })
-      .catch(e => {
-        throw new Error(e);
-      });
+
+    if (headers && isObject(headers) && Object.keys(headers).length > 0) {
+      config.headers = headers;
+    }
+    config.headers = this.setCommonHeader(config.headers);
+
+    if (extra && isObject(extra) && Object.keys(extra).length > 0) {
+      config = { ...config, ...extra };
+    }
+
+    return this.request(config);
   }
 
   /**
-   * 底层baseCgi的指针
-   * @param {url} url
-   * @param {string} method
+   * 发起请求
+   * @param {object} config
    * @return {Promise}
    */
-  request(url, method) {}
-
-  /**
-   * 在请求后将数据同步到store
-   * @param {string} mutation mutation的名称
-   * @param {any} state 数据
-   * @return void
-   */
-  commit(mutation, state) {}
+  request(config) {
+    return new Promise((resolve, reject) => {
+      axios(config)
+        .then(response => {
+          const data = get(response, clientEnv.respond.main, {});
+          const code = get(response, clientEnv.respond.code);
+          if (code && this.validCode.indexOf(code) !== -1) {
+            resolve(data);
+          } else {
+            reject({
+              code,
+              msg: get(response, clientEnv.respond.msg),
+            });
+          }
+        })
+        .catch(e => {
+          reject(e);
+        });
+    });
+  }
 }
 
-export default new ClientCgi(new BaseCgi());
+export default new ClientCgi();
