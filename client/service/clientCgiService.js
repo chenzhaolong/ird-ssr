@@ -3,26 +3,31 @@
  * cgi = {
  *     url: '',
  *     domain?: ''
- *     headers: {},
+ *     headers?: {},
  *     body: {},
- *     interceptors: request | response | both
+ *     ejectType?: request | response | both
  * }
+ * clientCgi.get({url: '', body: {}}).then()
+ * clientCgi.interceptors(() => {}).get({url: '', body: '', ejectType: 'request'})
  */
 import axios from 'axios';
-import { get, set, isObject, omit } from 'lodash';
+import { get, set, isObject, omit, isFunction } from 'lodash';
 
 const clientEnv = require('../../config/env').client;
 
 class ClientCgi {
   constructor() {
     this.validCode = clientEnv.validCode;
+    this.axios = axios.create();
+    this.requestCallback = null;
+    this.responseCallback = null;
   }
 
   /**
    * 获取域名
    * @return {string}
    */
-  getDomain() {
+  _getDomain() {
     if (process.env.NODE_ENV === 'production') {
       return clientEnv.domain.prod;
     } else {
@@ -33,7 +38,7 @@ class ClientCgi {
   /**
    * 设置全局的请求头--包括自定义请求头
    */
-  setCommonHeader(headers) {
+  _setCommonHeader(headers) {
     return headers;
   }
 
@@ -44,7 +49,7 @@ class ClientCgi {
    * @return {Promise}
    */
   get(cgi, extra = {}) {
-    const { url, domain, headers, body } = cgi;
+    const { url, domain, headers, body, ejectType } = cgi;
     if (!url) {
       return Promise.reject('请输入正确的url');
     }
@@ -52,7 +57,7 @@ class ClientCgi {
       method: 'get',
       url: url,
     };
-    config.baseURL = domain ? domain : this.getDomain();
+    config.baseURL = domain ? domain : this._getDomain();
     config.timeout = clientEnv.timeout;
     config.responseType = 'json';
 
@@ -63,13 +68,16 @@ class ClientCgi {
     if (headers && isObject(headers) && Object.keys(headers).length > 0) {
       config.headers = headers;
     }
-    config.headers = this.setCommonHeader(config.headers);
+    config.headers = this._setCommonHeader(config.headers);
 
     if (extra && isObject(extra) && Object.keys(extra).length > 0) {
       config = { ...config, ...extra };
     }
 
-    return this.request(config);
+    if (ejectType) {
+      return this._requestWithInterceptors(config, ejectType);
+    }
+    return this._request(config);
   }
 
   /**
@@ -79,7 +87,7 @@ class ClientCgi {
    * @return {Promise}
    */
   post(cgi, extra) {
-    const { url, domain, headers, body } = cgi;
+    const { url, domain, headers, body, ejectType } = cgi;
     if (!url) {
       return Promise.reject('请输入正确的url');
     }
@@ -87,7 +95,7 @@ class ClientCgi {
       method: 'post',
       url: url,
     };
-    config.baseURL = domain ? domain : this.getDomain();
+    config.baseURL = domain ? domain : this._getDomain();
     config.timeout = clientEnv.timeout;
     config.responseType = 'json';
 
@@ -98,13 +106,16 @@ class ClientCgi {
     if (headers && isObject(headers) && Object.keys(headers).length > 0) {
       config.headers = headers;
     }
-    config.headers = this.setCommonHeader(config.headers);
+    config.headers = this._setCommonHeader(config.headers);
 
     if (extra && isObject(extra) && Object.keys(extra).length > 0) {
       config = { ...config, ...extra };
     }
 
-    return this.request(config);
+    if (ejectType) {
+      return this._requestWithInterceptors(config, ejectType);
+    }
+    return this._request(config);
   }
 
   /**
@@ -112,9 +123,9 @@ class ClientCgi {
    * @param {object} config
    * @return {Promise}
    */
-  request(config) {
+  _request(config) {
     return new Promise((resolve, reject) => {
-      axios(config)
+      this.axios(config)
         .then(response => {
           const data = get(response, clientEnv.respond.main, {});
           const code = get(response, clientEnv.respond.code);
@@ -134,17 +145,98 @@ class ClientCgi {
   }
 
   /**
-   * 安装到vue中
+   * 请求后销毁拦截器
+   * @param {object} config
+   * @param {string} ejectType
+   * @return {Promise}
    */
-  static installVue() {
+  _requestWithInterceptors(config, ejectType) {
+    const cancelInterceptors = () => {
+      switch (ejectType) {
+        case 'request':
+          this.axios.interceptors.request.eject(this.requestCallback);
+          this.requestCallback = null;
+          break;
+        case 'response':
+          this.axios.interceptors.request.eject(this.responseCallback);
+          this.responseCallback = null;
+          break;
+        case 'both':
+          this.axios.interceptors.request.eject(this.requestCallback);
+          this.axios.interceptors.request.eject(this.responseCallback);
+          this.requestCallback = null;
+          this.responseCallback = null;
+          break;
+        default:
+          break;
+      }
+    };
+
+    return this._request(config)
+      .then(data => {
+        cancelInterceptors();
+        return data;
+      })
+      .catch(e => {
+        cancelInterceptors();
+        throw new Error(e);
+      });
+  }
+
+  /**
+   * 拦截器
+   * @param {Function} requestCallback
+   * @param {Function} responseCallback
+   * @return {Object}
+   */
+  interceptors(requestCallback = null, responseCallback = null) {
+    const rejectCallback = error => {
+      return Promise.reject(error);
+    };
+
+    if (requestCallback) {
+      this.requestCallback = requestCallback;
+      this.axios.interceptors.request.use(requestCallback, rejectCallback);
+    }
+
+    if (responseCallback) {
+      this.responseCallback = responseCallback;
+      this.axios.interceptors.response.use(responseCallback, rejectCallback);
+    }
+
+    return this;
+  }
+
+  /**
+   * 常量
+   */
+  static Constant = {
+    REQUEST: 'request',
+    RESPONSE: 'response',
+    BOTH: 'both',
+  };
+
+  /**
+   * 安装到vue中,this.$request({})
+   * @param {Function} callback
+   */
+  static installVue(callback) {
     return {
       install(Vue) {
         if (!Vue.prototype.$request) {
-          Vue.prototype.$request = new ClientCgi();
+          if (callback && isFunction(callback)) {
+            // 给axios实例添加拦截器登格外操作
+            Vue.prototype.$request = callback(new ClientCgi());
+          } else {
+            Vue.prototype.$request = new ClientCgi();
+          }
         }
       },
     };
   }
 }
 
-export default new ClientCgi();
+export default {
+  CgiService: new ClientCgi(),
+  ClientCgi,
+};
