@@ -132,6 +132,19 @@ class ClientCgi {
         });
     });
   }
+
+  /**
+   * 安装到vue中
+   */
+  static installVue() {
+    return {
+      install(Vue) {
+        if (!Vue.prototype.$request) {
+          Vue.prototype.$request = new ClientCgi();
+        }
+      },
+    };
+  }
 }
 
 export default new ClientCgi();
