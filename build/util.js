@@ -91,7 +91,6 @@ module.exports = {
     tpl.devtool = 'inline-source-map';
 
     // loader
-    // loader
     const DevLoaders = this.registerLoader();
     DevLoaders.forEach(loaders => {
       tpl.module.rules.push(loaders);

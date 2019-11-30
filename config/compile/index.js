@@ -7,5 +7,6 @@ module.exports = {
     env: 'production',
     sass: false,
     less: false,
+    htmlPath: '../index.template.html',
   },
 };

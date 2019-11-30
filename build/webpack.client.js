@@ -3,11 +3,12 @@
  **/
 const path = require('path');
 const webpack = require('webpack');
-const compilerEnv = require('../config/compile').client.env;
+const compilerEnv = require('../config/compile').client;
 const webpackUtils = require('./util');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const VueSSRClientPlugin = require('vue-server-renderer/client-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 // webpack公共配置模板
 const webpackTpl = {
@@ -51,6 +52,11 @@ const webpackTpl = {
     new webpack.DllReferencePlugin({
       manifest: require('../output/static/dll/vendor-manifest.json'),
     }),
+
+    new HtmlWebpackPlugin({
+      filename: 'index.template.html',
+      template: path.resolve(__dirname, compilerEnv.htmlPath),
+    }),
   ],
 
   resolve: {
@@ -67,7 +73,7 @@ const webpackTpl = {
 };
 
 let compiler = {};
-if (compilerEnv === 'production') {
+if (compilerEnv.env === 'production') {
   compiler = webpackUtils.getProdWebpackConfig(webpackTpl);
 } else {
   compiler = webpackUtils.getDevWebpackConfig(webpackTpl);
