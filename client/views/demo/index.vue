@@ -1,5 +1,7 @@
 <template>
-    
+    <div>
+        <span class="a1">demo</span>
+    </div>
 </template>
 
 <script>
@@ -21,5 +23,5 @@
 </script>
 
 <style scoped>
-
+    @import './index.css';
 </style>
