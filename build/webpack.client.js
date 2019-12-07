@@ -74,9 +74,9 @@ const webpackTpl = {
 
 let compiler = {};
 if (compilerEnv.env === 'production') {
-  compiler = webpackUtils.getProdWebpackConfig(webpackTpl);
+  compiler = webpackUtils.getClientProdWebpackConfig(webpackTpl);
 } else {
-  compiler = webpackUtils.getDevWebpackConfig(webpackTpl);
+  compiler = webpackUtils.getClientDevWebpackConfig(webpackTpl);
 }
 
 module.exports = compiler;

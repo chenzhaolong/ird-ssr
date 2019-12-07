@@ -34,6 +34,7 @@ module.exports = {
     return [StyleLoader];
   },
 
+  // 注册插件
   registerPlugins: function() {
     return [
       new webpack.optimize.OccurrenceOrderPlugin(),
@@ -45,7 +46,7 @@ module.exports = {
   },
 
   // 生产模式
-  getProdWebpackConfig: function(tpl) {
+  getClientProdWebpackConfig: function(tpl) {
     tpl.mode = 'production';
 
     tpl.output = Object.assign({}, tpl.output, {
@@ -80,7 +81,7 @@ module.exports = {
   },
 
   // 开发模式
-  getDevWebpackConfig: function(tpl) {
+  getClientDevWebpackConfig: function(tpl) {
     tpl.mode = 'development';
 
     tpl.output = Object.assign({}, tpl.output, {
@@ -96,6 +97,22 @@ module.exports = {
       tpl.module.rules.push(loaders);
     });
 
+    return tpl;
+  },
+
+  // ssr模式
+  getSSRWebpackConfig: function(tpl) {
+    tpl.mode = compilerEnv.env || 'production';
+    const styleLoader = this.handleStyleLoader();
+    tpl.module.rules.push(styleLoader);
+    if (compilerEnv.env === 'production') {
+      tpl.plugins.push(
+        new MiniCssExtractPlugin({
+          filename: 'style/[name].[hash].css',
+          chunkFilename: 'style/[id].[hash].css',
+        }),
+      );
+    }
     return tpl;
   },
 };

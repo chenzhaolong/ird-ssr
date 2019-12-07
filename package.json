@@ -7,6 +7,7 @@
     "eslint": "eslint --ext .js --fix ./client ./server ./entry",
     "dll": "sh ./bin/dll.sh",
     "client": "sh ./bin/client.sh",
+    "ssr": "cross-env webpack --progress --hide-modules --config ./build/webpack.ssr.js",
     "publish": ""
   },
   "repository": {
@@ -82,6 +83,7 @@
     "vue-template-compiler": "^2.6.10",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
-    "webpack-merge": "^4.2.2"
+    "webpack-merge": "^4.2.2",
+    "webpack-node-externals": "^1.7.2"
   }
 }

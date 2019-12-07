@@ -9,4 +9,8 @@ module.exports = {
     less: false,
     htmlPath: '../index.template.html',
   },
+  server: {
+    env: 'production',
+    port: 8011,
+  },
 };

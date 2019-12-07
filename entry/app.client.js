@@ -4,7 +4,7 @@
 
 import Vue from 'vue';
 import { createApp } from '../client/app';
-import { PrefetchService } from '../client/service/preFetchService';
+import { PrefetchService } from '../service/preFetchService';
 import { get } from 'lodash';
 
 const { app, store, router } = createApp();

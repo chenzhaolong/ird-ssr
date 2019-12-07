@@ -1,6 +1,7 @@
 /**
  * @file 预取数据服务
  */
+import { get, isFunction } from 'lodash';
 
 export class PrefetchService {
   /**
@@ -49,6 +50,33 @@ export class PrefetchService {
           return preFetch(globalStore, to.query);
         }
         return Promise.resolve();
+      }),
+    );
+  }
+
+  /**
+   * 服务端预取数据
+   * @param {array} asyncComponents 解析出来的异步组件
+   * @param {object} globalStore store对象
+   * @param {object} query 查询字符串对象
+   * @return {Promise}
+   */
+  static serverPrefetch(asyncComponents, globalStore, query) {
+    return Promise.all(
+      asyncComponents.map(component => {
+        const preFetch = get(component, 'preFetch');
+        const dynamicStore = get(component, 'dynamicStore', {});
+        // 是否动态注册store
+        if (dynamicStore && Object.keys(dynamicStore).length > 0) {
+          const { name, preserveState = false, store } = dynamicStore;
+          globalStore.registerModule(name, { ...store }, { preserveState });
+        }
+        // 预取数据
+        if (preFetch && isFunction(preFetch)) {
+          return preFetch(globalStore, query);
+        } else {
+          return Promise.reject();
+        }
       }),
     );
   }
