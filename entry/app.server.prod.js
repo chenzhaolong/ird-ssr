@@ -23,6 +23,7 @@ function registerGlobal(app) {
     runInNewContext: false,
     clientManifest: clientJson,
   });
+  app.context.originHtml = html;
 }
 
 registerGlobal(app);
