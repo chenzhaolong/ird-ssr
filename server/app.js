@@ -5,8 +5,8 @@
 import bodyParse from 'koa-bodyparser';
 import compress from 'koa-compress';
 import staticServer from 'koa-static';
-import statistics from './middleware/statistics';
-import SSRRender from './middleware/serverRender';
+import statistics from './middleware/base/statistics';
+import SSRRender from './middleware/base/serverRender';
 
 const path = require('path');
 const Koa = require('koa2');
