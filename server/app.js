@@ -6,6 +6,7 @@ import bodyParse from 'koa-bodyparser';
 import compress from 'koa-compress';
 import staticServer from 'koa-static';
 import statistics from './middleware/base/statistics';
+import Logger from './middleware/base/logger';
 import SSRRender from './middleware/base/serverRender';
 
 const path = require('path');
@@ -21,6 +22,7 @@ app.use(resource);
 app.use(bodyParse);
 app.use(compress);
 app.use(statistics);
+app.use(Logger);
 app.use(SSRRender);
 
 export default app;
