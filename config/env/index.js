@@ -19,5 +19,10 @@ module.exports = {
 
   server: {
     apiPrefix: '',
+    ssr: true,
+    proxy: {
+      host: '',
+      apiPrefix: '',
+    },
   },
 };

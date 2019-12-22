@@ -8,6 +8,7 @@ import staticServer from 'koa-static';
 import statistics from './middleware/base/statistics';
 import Logger from './middleware/base/logger';
 import Router from './middleware/base/router';
+import Transmission from './middleware/base/transmission';
 import SSRRender from './middleware/base/serverRender';
 
 const path = require('path');
@@ -26,6 +27,7 @@ app.use(statistics);
 app.use(Logger);
 app.use(Router.routes());
 app.use(Router.allowedMethods());
+app.use(Transmission);
 app.use(SSRRender);
 
 export default app;
