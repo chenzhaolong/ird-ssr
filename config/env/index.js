@@ -17,5 +17,7 @@ module.exports = {
     timeout: 3000,
   },
 
-  server: {},
+  server: {
+    apiPrefix: '',
+  },
 };
