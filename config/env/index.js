@@ -23,6 +23,11 @@ module.exports = {
     proxy: {
       host: '',
       apiPrefix: '',
+      timeout: 5000,
     },
   },
+
+  mysql: {},
+
+  redis: {},
 };

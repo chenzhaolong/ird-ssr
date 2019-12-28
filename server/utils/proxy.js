@@ -1,7 +1,7 @@
 /**
  * @file 代理层
  */
-import fetch from './fetch';
+import ProxyFetch from './fetch';
 import { get, isFunction } from 'lodash';
 
 const env = require('../../config/env');
@@ -16,7 +16,7 @@ async function proxy(ctx, item) {
     const [proxyHeader, proxyBody] = isFunction(extraHandle)
       ? extraHandle(ctx, header, body)
       : [header, body];
-    const response = await fetch({
+    const response = await ProxyFetch.fetch({
       host,
       url: to,
       method,
