@@ -11,8 +11,13 @@ function chooseProxyHost(ctx, path) {
 
 export default async (ctx, next) => {
   const apiPrefix = env.server.proxy.apiPrefix;
+  // const apiProxyPrefix = env.server.apiPrefix;
   const path = get(ctx, 'request.url', '');
-  if (path && path.indexOf(apiPrefix)) {
+  // 透传层的前缀不能和代理层的前缀相同
+  // if (apiPrefix && apiProxyPrefix && apiPrefix === apiProxyPrefix) {
+  //   next();
+  // }
+  if (path && apiPrefix && path.indexOf(apiPrefix)) {
     proxy(ctx, {
       to: path,
       host: chooseProxyHost(ctx, path),

@@ -13,25 +13,29 @@ class ProxyFetch {
     });
   }
 
-  getOptions() {}
-
-  requestSuccess() {}
-
-  requestFail() {}
+  getOptions(options) {
+    const { method, body, url } = options;
+    const params = { method, url };
+    const key = method === 'get' ? 'params' : 'data';
+    params[key] = body;
+    return params;
+  }
 
   fetch(options) {
-    const { url, host, method, body, header } = options;
+    const { url, host, header } = options;
     if (!url || !host) {
       return Promise.reject('url or host is undefined');
     }
     const instance = this.createAxios(host, header);
     const requestOptions = this.getOptions(options);
-    const success = this.requestSuccess;
-    const fail = this.requestFail;
     return instance
       .request(requestOptions)
-      .then(success)
-      .catch(fail);
+      .then(response => {
+        return response;
+      })
+      .catch(error => {
+        throw error;
+      });
   }
 }
 

@@ -1,6 +1,7 @@
 /**
  * @file 代理api层
  */
+import proxyActions from '../proxyActions';
 
 export default [
   {
@@ -8,7 +9,6 @@ export default [
     to: '',
     host: '',
     method: '',
-    extraAction: () => {},
-    extraHandle: () => {},
+    actions: proxyActions,
   },
 ];
