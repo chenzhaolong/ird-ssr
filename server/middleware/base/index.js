@@ -8,7 +8,7 @@ import Logger from './logger';
 import Router from './router';
 import transmission from './transmission';
 import SSRRender from './serverRender';
-import { isObject } from 'lodash';
+import { isObject, isBoolean, isFunction } from 'lodash';
 
 export function beforeBizMW(app, options) {
   const defaultBeforeMWConfig = {
@@ -21,9 +21,12 @@ export function beforeBizMW(app, options) {
     ? { ...defaultBeforeMWConfig, ...options }
     : defaultBeforeMWConfig;
   Object.keys(baseMWConfig).forEach(key => {
-    if (baseMWConfig[key]) {
+    const value = baseMWConfig[key];
+    if (isBoolean(value) && value) {
       const mw = matchMiddleWare(key);
       app.use(mw);
+    } else if (isFunction(value)) {
+      app.use(value);
     }
   });
 }
@@ -38,9 +41,12 @@ export function afterBizMW(app, options) {
     ? { ...defaultAfterMWConfig, ...options }
     : defaultAfterMWConfig;
   Object.keys(baseMWConfig).forEach(key => {
-    if (baseMWConfig[key]) {
+    const value = baseMWConfig[key];
+    if (isBoolean(value) && value) {
       const mw = matchMiddleWare(key);
       app.use(mw);
+    } else if (isFunction(value)) {
+      app.use(value);
     }
   });
 }
