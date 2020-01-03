@@ -4,6 +4,7 @@
 import ProxyFetch from './fetch';
 import { get, isFunction } from 'lodash';
 import moment from 'moment';
+import colors from 'colors';
 
 const env = require('../../config/env');
 const defaultHost = env.server.proxy.host;
@@ -47,6 +48,7 @@ function proxyLogger(ctx, url, host, error) {
   if (process.env.NODE_ENV === 'production') {
     return;
   }
+  const { green, blue, cyan, magenta, red } = colors;
   const endTime = Date.now();
   const duringTime = endTime - ctx.statistics.startTime;
   const startTimeStr = moment(ctx.statistics.requestTime).format(
@@ -56,11 +58,19 @@ function proxyLogger(ctx, url, host, error) {
   let proxyLogStr;
   if (type === 'success') {
     proxyLogStr = `
-    proxy success --- host: ${host} url: ${url} startTime: ${startTimeStr} endTime: ${endTimeStr} duringTime ${duringTime}
+    ${green('proxy success')} --- host: ${blue(host)} url: ${blue(
+      url,
+    )} startTime: ${cyan(startTimeStr)} endTime: ${cyan(
+      endTimeStr,
+    )} duringTime ${magenta(duringTime)}
   `;
   } else {
     proxyLogStr = `
-    proxy error --- host: ${host} url: ${url} startTime: ${startTimeStr} endTime: ${endTimeStr} error: ${error}
+    ${red('proxy error')} --- host: ${blue(host)} url: ${blue(
+      url,
+    )} startTime: ${cyan(startTimeStr)} endTime: ${cyan(
+      endTimeStr,
+    )} error: ${red(error)}
     `;
   }
   console.log(proxyLogStr);
