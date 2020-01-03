@@ -1,5 +1,6 @@
 /**
  * @file app的ssr封装入口
+ * todo: ssr的耗时时间
  **/
 
 import { createApp } from '../client/app';
@@ -23,7 +24,7 @@ export default context => {
         }
         PrefetchService.serverPrefetch(asyncComponents, store, query)
           .then(() => {
-            context.state = store.state;
+            context.state = { ...context.state, ...store.state };
             return resolve(app);
           })
           .catch(e => {

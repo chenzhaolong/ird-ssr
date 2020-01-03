@@ -6,7 +6,7 @@
  */
 
 export default {
-  extraAction: () => {},
-  extraHandle: () => {},
-  extraError: () => {},
+  extraAction: (ctx, response) => {},
+  extraHandle: (ctx, header, body) => {},
+  extraError: (ctx, error) => {},
 };

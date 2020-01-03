@@ -1,6 +1,7 @@
 /**
  * @file 服务端渲染中间件
  * 支持二次扩展
+ * todo：如何更好的支持扩展
  */
 const config = require('../../../config/env');
 

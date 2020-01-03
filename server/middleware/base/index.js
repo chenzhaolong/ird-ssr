@@ -38,7 +38,7 @@ export function afterBizMW(app, options) {
     SSRRender: true,
   };
   const baseMWConfig = isObject(options)
-    ? { ...defaultAfterMWConfig, ...options }
+    ? { ...options, ...defaultAfterMWConfig }
     : defaultAfterMWConfig;
   Object.keys(baseMWConfig).forEach(key => {
     const value = baseMWConfig[key];

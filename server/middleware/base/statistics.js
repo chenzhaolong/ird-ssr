@@ -1,5 +1,6 @@
 /**
  * @file 设置埋点数据
+ * todo：更好的处理埋点数据
  */
 import { get } from 'lodash';
 

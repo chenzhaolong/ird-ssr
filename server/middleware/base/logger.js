@@ -1,5 +1,6 @@
 /**
  * @file dev环境日志中心
+ * todo：优化开发环境中的日志展示
  */
 import moment from 'moment';
 import KoaLogger from 'koa-logger';
