@@ -5,7 +5,7 @@ import bodyParse from 'koa-bodyparser';
 import compress from 'koa-compress';
 import statistics from './statistics';
 import Logger from './logger';
-import Router from './router';
+import registerRoutes from './router';
 import transmission from './transmission';
 import SSRRender from './serverRender';
 import { isObject, isBoolean, isFunction } from 'lodash';
@@ -44,7 +44,11 @@ export function afterBizMW(app, options) {
     const value = baseMWConfig[key];
     if (isBoolean(value) && value) {
       const mw = matchMiddleWare(key);
-      app.use(mw);
+      if (key === 'Router') {
+        mw(app);
+      } else {
+        app.use(mw);
+      }
     } else if (isFunction(value)) {
       app.use(value);
     }
@@ -62,7 +66,7 @@ function matchMiddleWare(key) {
     case 'Logger':
       return Logger;
     case 'Router':
-      return Router;
+      return registerRoutes;
     case 'transmission':
       return transmission;
     case 'SSRRender':

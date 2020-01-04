@@ -5,8 +5,13 @@ import { beforeBizMW, afterBizMW } from './middleware/base';
 import staticServer from 'koa-static';
 
 const path = require('path');
-const Koa = require('koa2');
+const Koa = require('koa');
 const app = new Koa();
+const config = require('../config/env').server;
+const port =
+  process.env.NODE_ENV === 'production'
+    ? config.port.production
+    : config.port.development;
 
 // 静态资源
 const staticPath = path.resolve(__dirname, '../output/static/');
@@ -22,5 +27,11 @@ beforeBizMW(app);
 
 // 业务中间件注册之后
 afterBizMW(app);
+
+app.listen(port, () => {
+  console.log(
+    `Server startup, listen at ${port}.\nRun mode is ${config.mode}.`,
+  );
+});
 
 export default app;

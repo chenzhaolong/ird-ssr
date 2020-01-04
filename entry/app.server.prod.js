@@ -4,7 +4,7 @@
 const serverRender = require('vue-server-renderer');
 const fs = require('fs');
 const path = require('path');
-const app = require('./app');
+const app = require('../server/app');
 
 // 注入到全局
 function registerGlobal(app) {
@@ -17,7 +17,7 @@ function registerGlobal(app) {
     '../output/static/index.template.html',
   );
   const html = fs.readFileSync(htmlPath, 'utf-8');
-  const clientJson = require('../static/dist/vue-ssr-client-manifest');
+  const clientJson = require('../output/static/vue-ssr-client-manifest');
   app.context.render = serverRender.createBundleRenderer(ssrPath, {
     template: html,
     runInNewContext: false,

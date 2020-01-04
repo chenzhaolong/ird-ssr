@@ -115,4 +115,16 @@ module.exports = {
     }
     return tpl;
   },
+
+  // server-prod模式
+  getServerProdWebpackConfig: function(tpl) {
+    const pkg = require('../package.json');
+    const externals = Object.keys(pkg.dependencies).concat(
+      Object.keys(pkg.devDependencies),
+    );
+    if (!tpl.externals) {
+      tpl.externals = externals;
+    }
+    return tpl;
+  },
 };

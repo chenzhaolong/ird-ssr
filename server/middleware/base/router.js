@@ -8,7 +8,7 @@ import proxy from '../../utils/proxy';
 import proxyApis from '../../routes/proxyApi';
 
 const config = require('../../../config/env');
-const router = KoaRouter({ prefix: config.server.apiPrefix });
+const router = new KoaRouter({ prefix: config.server.apiPrefix });
 
 function registerRoute() {
   routes.forEach(routeConfig => {
@@ -18,11 +18,10 @@ function registerRoute() {
       router.redirect(from, to, code);
     } else {
       const methodKey = method ? method.toLowerCase() : 'get';
-      const controller = router[methodKey];
       if (isArray(action)) {
-        controller(url, ...action);
+        router[methodKey](url, ...action);
       } else {
-        controller(url, action);
+        router[methodKey](url, action);
       }
     }
   });
@@ -33,8 +32,7 @@ function registerProxyRoute() {
     const path = get(item, 'from', '');
     if (path) {
       const method = get(item, 'method', 'get').toLowerCase();
-      const controller = router[method];
-      controller(path, async (ctx, next) => {
+      router[method](path, async (ctx, next) => {
         proxy(ctx, item)
           .then(res => {
             ctx.body = res;
@@ -47,6 +45,9 @@ function registerProxyRoute() {
   });
 }
 
-registerRoute();
-registerProxyRoute();
-export default router;
+export default function registerRoutes(app) {
+  registerRoute();
+  registerProxyRoute();
+  app.use(router.routes());
+  app.use(router.allowedMethods());
+}

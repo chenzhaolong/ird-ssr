@@ -18,6 +18,10 @@ module.exports = {
   },
 
   server: {
+    port: {
+      development: 1000,
+      production: 8011,
+    },
     apiPrefix: '',
     ssr: true,
     proxy: {

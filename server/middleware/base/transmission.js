@@ -3,7 +3,7 @@
  */
 import { get } from 'lodash';
 import proxy from '../../utils/proxy';
-const env = require('../../config/env');
+const env = require('../../../config/env');
 
 function chooseProxyHost(ctx, path) {
   return env.server.proxy.host;
