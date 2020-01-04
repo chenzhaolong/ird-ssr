@@ -45,9 +45,7 @@ function registerProxyRoute() {
   });
 }
 
-export default function registerRoutes(app) {
-  registerRoute();
-  registerProxyRoute();
-  app.use(router.routes());
-  app.use(router.allowedMethods());
-}
+registerRoute();
+registerProxyRoute();
+
+export default router;
