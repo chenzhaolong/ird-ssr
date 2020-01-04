@@ -7,6 +7,7 @@ const webpackTpl = {
   context: path.resolve(__dirname, '../'),
   mode: 'production',
   target: 'node',
+  devtool: false,
   entry: ['babel-polyfill', './entry/app.server.prod.js'],
   output: {
     filename: 'server.bundle.js',

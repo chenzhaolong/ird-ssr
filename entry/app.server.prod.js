@@ -4,10 +4,10 @@
 const serverRender = require('vue-server-renderer');
 const fs = require('fs');
 const path = require('path');
-const app = require('../server/app');
+import app from '../server/app';
 
 // 注入到全局
-function registerGlobal(app) {
+function registerGlobal(server) {
   const ssrPath = path.resolve(
     __dirname,
     '../output/vue-ssr-server-bundle.json',
@@ -18,12 +18,12 @@ function registerGlobal(app) {
   );
   const html = fs.readFileSync(htmlPath, 'utf-8');
   const clientJson = require('../output/static/vue-ssr-client-manifest');
-  app.context.render = serverRender.createBundleRenderer(ssrPath, {
+  server.context.render = serverRender.createBundleRenderer(ssrPath, {
     template: html,
     runInNewContext: false,
     clientManifest: clientJson,
   });
-  app.context.originHtml = html;
+  server.context.originHtml = html;
 }
 
 registerGlobal(app);

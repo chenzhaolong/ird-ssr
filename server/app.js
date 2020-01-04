@@ -29,9 +29,7 @@ beforeBizMW(app);
 afterBizMW(app);
 
 app.listen(port, () => {
-  console.log(
-    `Server startup, listen at ${port}.\nRun mode is ${config.mode}.`,
-  );
+  console.log(`Server startup, listen at ${port}.`);
 });
 
 export default app;
