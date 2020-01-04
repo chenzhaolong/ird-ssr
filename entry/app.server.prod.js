@@ -4,7 +4,7 @@
 const serverRender = require('vue-server-renderer');
 const fs = require('fs');
 const path = require('path');
-import app from '../server/app';
+const app = require('../server/app').default;
 
 // 注入到全局
 function registerGlobal(server) {
