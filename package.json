@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "eslint": "eslint --ext .js --fix ./client ./server ./entry",
+    "publish": "sh ./bin/publish.sh",
     "dll": "sh ./bin/dll.sh",
     "client": "sh ./bin/client.sh",
     "ssr": "cross-env webpack --progress --hide-modules --config ./build/webpack.ssr.js",
-    "server": "cross-env NODE_ENV=production webpack --config ./build/webpack.server.js --hide-modules",
-    "prod": "cross-env port=8011 RUN_MODE=qatest node --inspect ./output/server.bundle.js"
+    "server:prod": "cross-env NODE_ENV=production webpack --config ./build/webpack.server.js --hide-modules",
+    "server:dev": "cross-env port=8011 RUN_MODE=qatest node --inspect ./output/server.bundle.js"
   },
   "repository": {
     "type": "git",
