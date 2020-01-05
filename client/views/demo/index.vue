@@ -18,7 +18,7 @@
         dynamicStore: config,
 
         preFetch(store, params) {
-
+            return Promise.resolve()
         }
     }
 </script>

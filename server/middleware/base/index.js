@@ -1,7 +1,7 @@
 /**
  * @file 中间件护航
  */
-import bodyParse from 'koa-bodyparser';
+import bodyParser from 'koa-bodyparser';
 import compress from 'koa-compress';
 import statistics from './statistics';
 import Logger from './logger';
@@ -10,8 +10,8 @@ import transmission from './transmission';
 import SSRRender from './serverRender';
 
 export function beforeBizMW(app) {
-  app.use(bodyParse);
-  app.use(compress);
+  app.use(bodyParser());
+  app.use(compress());
   app.use(statistics);
   app.use(Logger);
 }

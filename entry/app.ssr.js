@@ -28,11 +28,11 @@ export default context => {
             return resolve(app);
           })
           .catch(e => {
-            return reject();
+            return reject(e);
           });
       },
-      () => {
-        return reject();
+      e => {
+        return reject(e);
       },
     );
   });

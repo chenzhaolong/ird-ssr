@@ -103,16 +103,28 @@ module.exports = {
   // ssr模式
   getSSRWebpackConfig: function(tpl) {
     tpl.mode = compilerEnv.env || 'production';
-    const styleLoader = this.handleStyleLoader();
-    tpl.module.rules.push(styleLoader);
-    if (compilerEnv.env === 'production') {
-      tpl.plugins.push(
-        new MiniCssExtractPlugin({
-          filename: 'style/[name].[hash].css',
-          chunkFilename: 'style/[id].[hash].css',
-        }),
-      );
+    let styleLoader = {
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader'],
+    };
+    if (compilerEnv.sass) {
+      styleLoader.test = /\.(sa|sc|c)ss$/;
+      styleLoader.use.push('sass-loader');
+    } else if (compilerEnv.less) {
+      styleLoader.test = /\.(le|c)ss$/;
+      styleLoader.use.push('less-loader');
     }
+    tpl.module.rules.push(styleLoader);
+    // const styleLoader = this.handleStyleLoader();
+    // tpl.module.rules.push(styleLoader);
+    // if (compilerEnv.env === 'production') {
+    //   tpl.plugins.push(
+    //     new MiniCssExtractPlugin({
+    //       filename: 'style/[name].[hash].css',
+    //       chunkFilename: 'style/[id].[hash].css',
+    //     }),
+    //   );
+    // }
     return tpl;
   },
 
