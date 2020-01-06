@@ -1,5 +1,6 @@
 /**
  * @file 预取数据服务
+ * todo: 优化健壮这里的代码
  */
 import { get, isFunction } from 'lodash';
 
@@ -11,18 +12,12 @@ export class PrefetchService {
    * @return {Promise}
    */
   static getClientMatchedComponents(router, to) {
-    return new Promise((resolve, reject) => {
-      const matchEdComponents = router.getMatchedComponents(to);
-      if (matchEdComponents.length > 0) {
-        resolve(
-          matchEdComponents.map(component => {
-            return typeof component === 'function' ? component() : component;
-          }),
-        );
-      } else {
-        reject();
-      }
-    });
+    const matchEdComponents = router.getMatchedComponents(to);
+    return Promise.all(
+      matchEdComponents.map(component => {
+        return typeof component === 'function' ? component() : component;
+      }),
+    );
   }
 
   /**
@@ -33,25 +28,24 @@ export class PrefetchService {
    * @return {Promise}
    */
   static clientPrefetch(router, to, globalStore) {
-    const matchComponents = PrefetchService.getClientMatchedComponents(
-      router,
-      to,
-    );
-    return Promise.all(
-      matchComponents.map(component => {
-        const { dynamicStore, preFetch } = component;
-        // 是否动态注册store
-        if (dynamicStore && Object.keys(dynamicStore).length > 0) {
-          const { name, preserveState = false, store } = dynamicStore;
-          globalStore.registerModule(name, { ...store }, { preserveState });
-        }
-        // 预取数据
-        if (typeof preFetch == 'function') {
-          return preFetch(globalStore, to.query);
-        }
-        return Promise.resolve();
-      }),
-    );
+    const promise = PrefetchService.getClientMatchedComponents(router, to);
+    return promise.then(matchComponents => {
+      return Promise.all(
+        matchComponents.map(component => {
+          const { dynamicStore, preFetch } = component;
+          // 是否动态注册store
+          if (dynamicStore && Object.keys(dynamicStore).length > 0) {
+            const { name, preserveState = false, store } = dynamicStore;
+            globalStore.registerModule(name, { ...store }, { preserveState });
+          }
+          // 预取数据
+          if (typeof preFetch == 'function') {
+            return preFetch(globalStore, to.query);
+          }
+          return Promise.resolve();
+        }),
+      );
+    });
   }
 
   /**

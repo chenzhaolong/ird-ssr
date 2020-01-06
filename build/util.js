@@ -1,4 +1,7 @@
-/** * @file webpack的工具文件 */
+/** *
+ * @file webpack的工具文件
+ * todo：优化这里的代码结构
+ * */
 
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -13,7 +16,7 @@ module.exports = {
       use: [
         compilerEnv.env === 'production'
           ? MiniCssExtractPlugin.loader
-          : 'style-loader',
+          : 'vue-style-loader',
         'css-loader',
       ],
     };
@@ -105,7 +108,7 @@ module.exports = {
     tpl.mode = compilerEnv.env || 'production';
     let styleLoader = {
       test: /\.css$/,
-      use: ['style-loader', 'css-loader'],
+      use: ['vue-style-loader', 'css-loader'],
     };
     if (compilerEnv.sass) {
       styleLoader.test = /\.(sa|sc|c)ss$/;
@@ -115,16 +118,6 @@ module.exports = {
       styleLoader.use.push('less-loader');
     }
     tpl.module.rules.push(styleLoader);
-    // const styleLoader = this.handleStyleLoader();
-    // tpl.module.rules.push(styleLoader);
-    // if (compilerEnv.env === 'production') {
-    //   tpl.plugins.push(
-    //     new MiniCssExtractPlugin({
-    //       filename: 'style/[name].[hash].css',
-    //       chunkFilename: 'style/[id].[hash].css',
-    //     }),
-    //   );
-    // }
     return tpl;
   },
 

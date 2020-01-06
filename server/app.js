@@ -14,7 +14,7 @@ const port =
     : config.port.development;
 
 // 静态资源
-const staticPath = path.resolve(__dirname, '../output/static/');
+const staticPath = path.resolve(__dirname, '../');
 const resource = staticServer(staticPath);
 app.use(resource);
 

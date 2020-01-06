@@ -1,5 +1,6 @@
 /**
  * @file 编译配置
+ * todo:后续决定是否和配置文件合并
  */
 
 module.exports = {

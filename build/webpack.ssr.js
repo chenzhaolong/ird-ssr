@@ -1,5 +1,6 @@
 /**
  * @file webpack的ssr编译配置信息
+ * todo:css样式不能在ssr编译的时候加入
  **/
 
 const nodeExternals = require('webpack-node-externals');

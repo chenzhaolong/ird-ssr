@@ -1,6 +1,6 @@
 /**
  * @file app的ssr封装入口
- * todo: ssr的耗时时间
+ * todo: ssr的耗时时间呗错误兼容
  **/
 
 import { createApp } from '../client/app';

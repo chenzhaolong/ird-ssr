@@ -1,4 +1,8 @@
-/** * @file app的后端入口 */
+/** *
+ * @file app的后端入口
+ * todo：还没开发完
+ * */
+
 // 提供转化成es5的语法
 require('babel-polyfill');
 

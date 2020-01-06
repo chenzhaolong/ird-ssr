@@ -11,7 +11,7 @@ module.exports = {
   mode: process.env.NODE_ENV,
 
   entry: {
-    vendor: ['vue', 'vue-router', 'vuex', 'axios'],
+    vendor: ['vue', 'vue-router', 'vuex', 'axios', 'moment'],
   },
 
   output: {
