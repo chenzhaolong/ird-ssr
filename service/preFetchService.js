@@ -2,7 +2,7 @@
  * @file 预取数据服务
  * todo: 优化健壮这里的代码
  */
-import { get, isFunction } from 'lodash';
+import { get, isFunction, isArray } from 'lodash';
 
 export class PrefetchService {
   /**
@@ -13,6 +13,9 @@ export class PrefetchService {
    */
   static getClientMatchedComponents(router, to) {
     const matchEdComponents = router.getMatchedComponents(to);
+    if (!isArray(matchEdComponents) || matchEdComponents.length === 0) {
+      return Promise.resolve([]);
+    }
     return Promise.all(
       matchEdComponents.map(component => {
         return typeof component === 'function' ? component() : component;
@@ -33,7 +36,6 @@ export class PrefetchService {
       return Promise.all(
         matchComponents.map(component => {
           const { preFetch } = component;
-          // 预取数据
           if (typeof preFetch == 'function') {
             return preFetch(globalStore, to.query);
           }

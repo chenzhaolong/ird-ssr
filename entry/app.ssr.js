@@ -1,6 +1,5 @@
 /**
  * @file app的ssr封装入口
- * todo: ssr的耗时时间呗错误兼容
  **/
 
 import { createApp } from '../client/app';
@@ -18,7 +17,7 @@ export default context => {
       return reject();
     }
     const startTime = Date.now();
-    SSRLog({ desc: 'ssr start：', type: 'wait', time: startTime });
+    SSRLog({ desc: 'ssr start：', type: 'wait', time: startTime, data: path });
     router.push(path);
     router.onReady(
       () => {
@@ -31,7 +30,7 @@ export default context => {
             context.state = { ...context.state, ...store.state };
             const endTime = Date.now();
             SSRLog({
-              desc: 'ssr success，耗时：',
+              desc: `ssr success，${path} 耗时：`,
               data: `${endTime - startTime}s`,
               type: 'success',
               time: endTime,
@@ -39,12 +38,12 @@ export default context => {
             return resolve(app);
           })
           .catch(e => {
-            SSRLog({ desc: 'ssr 预取失败', data: e, type: 'error' });
+            SSRLog({ desc: `ssr ${path} 预取失败`, data: e, type: 'error' });
             return reject(e);
           });
       },
       e => {
-        SSRLog({ desc: 'ssr onReady失败', data: e, type: 'error' });
+        SSRLog({ desc: `ssr ${path} onReady失败`, data: e, type: 'error' });
         return reject(e);
       },
     );
