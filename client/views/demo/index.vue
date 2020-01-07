@@ -22,7 +22,6 @@
         },
 
         preFetch(store, params) {
-            console.log('asdfa');
             store.commit('change', 10);
             return Promise.resolve()
         },

@@ -19,7 +19,6 @@ export default async (ctx, next) => {
       ctx.body = html;
     })
     .catch(e => {
-      console.log('e', e);
       next();
     });
 };

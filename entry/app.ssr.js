@@ -6,6 +6,8 @@
 import { createApp } from '../client/app';
 import { get } from 'lodash';
 import { PrefetchService } from '../service/preFetchService';
+import colors from 'colors';
+import moment from 'moment';
 
 export default context => {
   return new Promise((resolve, reject) => {
@@ -15,7 +17,8 @@ export default context => {
     if (!path) {
       return reject();
     }
-    console.log('store.state', store.state);
+    const startTime = Date.now();
+    SSRLog({ desc: 'ssr start：', type: 'wait', time: startTime });
     router.push(path);
     router.onReady(
       () => {
@@ -26,16 +29,47 @@ export default context => {
         PrefetchService.serverPrefetch(asyncComponents, store, query)
           .then(() => {
             context.state = { ...context.state, ...store.state };
-            console.log('context.state', context.state);
+            const endTime = Date.now();
+            SSRLog({
+              desc: 'ssr success，耗时：',
+              data: `${endTime - startTime}s`,
+              type: 'success',
+              time: endTime,
+            });
             return resolve(app);
           })
           .catch(e => {
+            SSRLog({ desc: 'ssr 预取失败', data: e, type: 'error' });
             return reject(e);
           });
       },
       e => {
+        SSRLog({ desc: 'ssr onReady失败', data: e, type: 'error' });
         return reject(e);
       },
     );
   });
 };
+
+function SSRLog(options) {
+  // if (process.env.NODE_ENV === 'production') {
+  //     return;
+  // }
+  const { desc, data = '', type, time } = options;
+  const timeStr = moment(time).format('YYYY-MM-DD HH:mm:ss');
+  let render;
+  switch (type) {
+    case 'success':
+      render = colors.green;
+      break;
+    case 'wait':
+      render = colors.blue;
+      break;
+    case 'error':
+      render = colors.red;
+      break;
+    default:
+      break;
+  }
+  console.log(`${render(timeStr)} ${render(desc)}`, data);
+}
