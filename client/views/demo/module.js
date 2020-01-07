@@ -7,10 +7,14 @@ export const config = {
   preserveState: false,
   store: {
     state() {
-      return {};
+      return { a: 1 };
     },
     getters: {},
-    mutations: {},
+    mutations: {
+      change(st, playload) {
+        return (st.a = playload);
+      },
+    },
     actions: {},
   },
 };

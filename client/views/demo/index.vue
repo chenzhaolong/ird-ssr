@@ -6,7 +6,6 @@
 </template>
 
 <script>
-    import {config} from "./module";
 
     export default {
         name: "index",
@@ -17,17 +16,16 @@
 
         methods: {
             handle() {
-                console.log('here');
                 console.log('this.$store', this.$store);
                 this.$router.push('/demo/app1');
             }
         },
 
-        dynamicStore: config,
-
         preFetch(store, params) {
+            console.log('asdfa');
+            store.commit('change', 10);
             return Promise.resolve()
-        }
+        },
     }
 </script>
 

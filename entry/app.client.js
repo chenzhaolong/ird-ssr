@@ -26,29 +26,5 @@ router.beforeEach((to, from, next) => {
     });
 });
 
-// 全局钩子
-// Vue.mixin({
-//   beforeDestroy() {
-//     const { name, preserveState = false } = get(
-//       this.$options,
-//       'dynamicStore',
-//       {},
-//     );
-//     // 每当组件销毁前判断是否注销moduleStore
-//     if (!preserveState && name) {
-//       store.unregisterModule(name);
-//     }
-//     debugger
-//     const beforeDestroy = this.$options.beforeDestroy;
-//     if (isArray(beforeDestroy)) {
-//       beforeDestroy.forEach(func => {
-//         func();
-//       });
-//     } else {
-//       beforeDestroy();
-//     }
-//   },
-// });
-
 // 挂载
 app.$mount('#app', true);

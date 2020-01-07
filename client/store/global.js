@@ -4,9 +4,13 @@
 
 export default {
   state() {
-    return {};
+    return { a: 1 };
   },
   actions: {},
-  mutations: {},
+  mutations: {
+    change(st, playload) {
+      return (st.a = playload);
+    },
+  },
   getters: {},
 };

@@ -3,12 +3,15 @@
  */
 
 import Vue from 'vue';
+import Vuex from 'vuex';
 import App from './app.vue';
 import router from './routes/router';
-import store from './store/store';
+import storeConfig from './store/store';
 
 // 创建一个app应用
+Vue.use(Vuex);
 export function createApp() {
+  const store = new Vuex.Store({ ...storeConfig });
   const app = new Vue({
     ...App,
     store,

@@ -32,12 +32,7 @@ export class PrefetchService {
     return promise.then(matchComponents => {
       return Promise.all(
         matchComponents.map(component => {
-          const { dynamicStore, preFetch } = component;
-          // 是否动态注册store
-          if (dynamicStore && Object.keys(dynamicStore).length > 0) {
-            const { name, preserveState = false, store } = dynamicStore;
-            globalStore.registerModule(name, { ...store }, { preserveState });
-          }
+          const { preFetch } = component;
           // 预取数据
           if (typeof preFetch == 'function') {
             return preFetch(globalStore, to.query);
@@ -59,12 +54,6 @@ export class PrefetchService {
     return Promise.all(
       asyncComponents.map(component => {
         const preFetch = get(component, 'preFetch');
-        const dynamicStore = get(component, 'dynamicStore', {});
-        // 是否动态注册store
-        if (dynamicStore && Object.keys(dynamicStore).length > 0) {
-          const { name, preserveState = false, store } = dynamicStore;
-          globalStore.registerModule(name, { ...store }, { preserveState });
-        }
         // 预取数据
         if (preFetch && isFunction(preFetch)) {
           return preFetch(globalStore, query);

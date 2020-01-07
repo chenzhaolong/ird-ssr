@@ -15,6 +15,7 @@ export default context => {
     if (!path) {
       return reject();
     }
+    console.log('store.state', store.state);
     router.push(path);
     router.onReady(
       () => {
@@ -25,6 +26,7 @@ export default context => {
         PrefetchService.serverPrefetch(asyncComponents, store, query)
           .then(() => {
             context.state = { ...context.state, ...store.state };
+            console.log('context.state', context.state);
             return resolve(app);
           })
           .catch(e => {
