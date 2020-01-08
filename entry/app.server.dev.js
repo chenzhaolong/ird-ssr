@@ -13,10 +13,13 @@ require('source-map-support').install();
 require('babel-register')();
 
 const app = require('../server/app').default;
-const clientWebpack = require('../build/webpack.client');
+const clientWebpack = require('../build/webpack.client.dev');
+const serverWebpack = require('../build/webpack.server');
 const webpack = require('webpack');
 const koaWebpack = require('koa-webpack');
 const server = require('../config/env').server;
+
+serverWebpack.mode = 'development';
 
 // client HMR
 async function clientHMR() {

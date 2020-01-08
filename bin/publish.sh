@@ -19,13 +19,13 @@ runDll() {
 compiler() {
   case $MODE in
     client)
-       npm run client;;
+       npm run client prod;;
     ssr)
        npm run ssr;;
     server)
        npm run server:prod;;
     *)
-      npm run client
+      npm run client prod
       npm run ssr
       npm run server:prod;;
   esac

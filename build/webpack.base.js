@@ -1,17 +1,12 @@
 /**
- * @file webpack的前端编译配置信息
- **/
+ * @file 客户端编译基础模板
+ */
 const path = require('path');
-const webpack = require('webpack');
-const compilerEnv = require('../config/compile').client;
-const webpackUtils = require('./util');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const VueSSRClientPlugin = require('vue-server-renderer/client-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-// webpack公共配置模板
-const webpackTpl = {
+module.exports = {
   entry: {
     main: path.resolve(__dirname, '../entry/app.client.js'),
   },
@@ -48,15 +43,6 @@ const webpackTpl = {
     new VueSSRClientPlugin(),
 
     new FriendlyErrorsWebpackPlugin(),
-
-    new webpack.DllReferencePlugin({
-      manifest: require('../output/static/dll/vendor-manifest.json'),
-    }),
-
-    new HtmlWebpackPlugin({
-      filename: 'index.template.html',
-      template: path.resolve(__dirname, compilerEnv.htmlPath),
-    }),
   ],
 
   resolve: {
@@ -68,15 +54,4 @@ const webpackTpl = {
 
     extensions: ['.js', '.css', '.vue'],
   },
-
-  optimization: {},
 };
-
-let compiler = {};
-if (compilerEnv.env === 'production') {
-  compiler = webpackUtils.getClientProdWebpackConfig(webpackTpl);
-} else {
-  compiler = webpackUtils.getClientDevWebpackConfig(webpackTpl);
-}
-
-module.exports = compiler;

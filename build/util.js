@@ -1,22 +1,17 @@
 /** *
  * @file webpack的工具文件
- * todo：优化这里的代码结构
  * */
 
-const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const compilerEnv = require('../config/compile').client;
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const compilerEnv = require('../config/compile');
 
 module.exports = {
   // 处理样式加载器
-  handleStyleLoader: function() {
+  handleStyleLoader: function(env) {
     let styleLoader = {
       test: /\.css$/,
       use: [
-        compilerEnv.env === 'production'
-          ? MiniCssExtractPlugin.loader
-          : 'vue-style-loader',
+        env === 'production' ? MiniCssExtractPlugin.loader : 'vue-style-loader',
         'css-loader',
       ],
     };
@@ -32,80 +27,14 @@ module.exports = {
   },
 
   // 注册加载器
-  registerLoader: function() {
-    const StyleLoader = this.handleStyleLoader();
+  registerLoader: function(env) {
+    const StyleLoader = this.handleStyleLoader(env);
     return [StyleLoader];
-  },
-
-  // 注册插件
-  registerPlugins: function() {
-    return [
-      new webpack.optimize.OccurrenceOrderPlugin(),
-      new MiniCssExtractPlugin({
-        filename: 'style/[name].[hash].css',
-        chunkFilename: 'style/[id].[hash].css',
-      }),
-    ];
-  },
-
-  // 生产模式
-  getClientProdWebpackConfig: function(tpl) {
-    tpl.mode = 'production';
-
-    tpl.output = Object.assign({}, tpl.output, {
-      filename: 'main.min.js',
-      chunkFilename: 'chunk/[name].chunk.min.js?_t=[chunkhash]',
-    });
-
-    tpl.resolve.alias.vue = 'vue/dist/vue.runtime.min.js';
-
-    // loader
-    const ProdLoaders = this.registerLoader();
-    ProdLoaders.forEach(loaders => {
-      tpl.module.rules.push(loaders);
-    });
-
-    // plugins
-    const ProdPlugins = this.registerPlugins();
-    ProdPlugins.forEach(plugins => {
-      tpl.plugins.push(plugins);
-    });
-
-    // optimization
-    tpl.optimization.minimizer = [
-      new UglifyJsPlugin({
-        cache: true,
-        parallel: true,
-        sourceMap: true,
-      }),
-    ];
-
-    return tpl;
-  },
-
-  // 开发模式
-  getClientDevWebpackConfig: function(tpl) {
-    tpl.mode = 'development';
-
-    tpl.output = Object.assign({}, tpl.output, {
-      filename: 'main.js',
-      chunkFilename: 'chunk/[name].chunk.js?_t=[chunkhash]',
-    });
-
-    tpl.devtool = 'inline-source-map';
-
-    // loader
-    const DevLoaders = this.registerLoader();
-    DevLoaders.forEach(loaders => {
-      tpl.module.rules.push(loaders);
-    });
-
-    return tpl;
   },
 
   // ssr模式
   getSSRWebpackConfig: function(tpl) {
-    tpl.mode = compilerEnv.env || 'production';
+    tpl.mode = 'production';
     let styleLoader = {
       test: /\.css$/,
       use: ['vue-style-loader', 'css-loader'],

@@ -31,7 +31,7 @@ export default context => {
             const endTime = Date.now();
             SSRLog({
               desc: `ssr success，${path} 耗时：`,
-              data: `${endTime - startTime}s`,
+              data: `${endTime - startTime}ms`,
               type: 'success',
               time: endTime,
             });
