@@ -13,6 +13,10 @@ MODE="all"
 runDll() {
   if [ $DLL = "YES" ];then
     npm run dll
+  else
+   if [ ! \( -f ./output/static/dll/vendor-manifest.json \) ];then
+     npm run dll
+   fi
   fi
 }
 
@@ -46,6 +50,10 @@ publish() {
      *) shift;;
     esac
    done
+
+   if [ ! \( -d ./output \) ];then
+     mkdir ./output
+   fi
 
    runDll
    compiler
