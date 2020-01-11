@@ -9,7 +9,7 @@ function loggerFormat(str, args) {
   if (process.env.NODE_ENV === 'production') {
     return null;
   }
-  const date = moment().format('YYYY-MM-DD HH:mm:ss');
+  const date = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
   console.log(date + str);
 }
 

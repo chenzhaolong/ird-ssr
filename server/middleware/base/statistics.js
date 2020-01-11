@@ -10,5 +10,5 @@ export default async (ctx, next) => {
     requestTime: Date.now(),
     responseTime: 0,
   };
-  next();
+  await next();
 };

@@ -29,6 +29,6 @@ export default async (ctx, next) => {
         ctx.body = err;
       });
   } else {
-    next();
+    await next();
   }
 };

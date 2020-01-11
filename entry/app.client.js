@@ -3,10 +3,8 @@
  * todo: 处理这里的取消注册的逻辑
  */
 
-import Vue from 'vue';
 import { createApp } from '../client/app';
 import { PrefetchService } from '../service/preFetchService';
-import { isArray, get } from 'lodash';
 
 const { app, store, router } = createApp();
 

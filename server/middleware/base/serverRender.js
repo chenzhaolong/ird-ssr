@@ -18,25 +18,24 @@ const assertSuffix = [
 
 export default async (ctx, next) => {
   if (!config.server.ssr) {
-    next();
+    await next();
   }
   const hasAsset = assertSuffix.some(suffix => {
     return ctx.request.url.indexOf(suffix) !== -1;
   });
   if (hasAsset) {
-    next();
+    await next();
   } else {
     const context = {
       request: ctx.request,
       state: {},
     };
-    ctx.render
-      .renderToString(context)
-      .then(html => {
-        ctx.body = html;
-      })
-      .catch(e => {
-        next();
-      });
+    const html = await ctx.render.renderToString(context);
+    if (html) {
+      ctx.body = html;
+    } else {
+      console.log('serverRenderError:');
+      await next();
+    }
   }
 };

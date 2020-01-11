@@ -51,11 +51,11 @@ export default context => {
 };
 
 function SSRLog(options) {
-  // if (process.env.NODE_ENV === 'production') {
-  //     return;
-  // }
+  if (process.env.NODE_ENV === 'production') {
+    return;
+  }
   const { desc, data = '', type, time } = options;
-  const timeStr = moment(time).format('YYYY-MM-DD HH:mm:ss');
+  const timeStr = moment(time).format('YYYY-MM-DD HH:mm:ss.SSS');
   let render;
   switch (type) {
     case 'success':

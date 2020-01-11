@@ -1,8 +1,8 @@
 <template>
     <div>
-        <div @click="handle">
-            <p>点击到de0mo</p>
-        </div>
+        <p @click="handle">
+            点击到de0mo
+        </p>
     </div>
 </template>
 
