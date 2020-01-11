@@ -10,7 +10,7 @@
     "client": "sh ./bin/client.sh",
     "ssr": "cross-env webpack --progress --hide-modules --config ./build/webpack.ssr.js",
     "server:prod": "cross-env NODE_ENV=production webpack --config ./build/webpack.server.js --hide-modules",
-    "server:dev": "cross-env NODE_ENV=development RUN_MODE=qatest node --inspect ./entry/app.server.dev.js"
+    "server:dev": "cross-env NODE_ENV=development node --inspect ./entry/app.server.dev.js"
   },
   "repository": {
     "type": "git",
