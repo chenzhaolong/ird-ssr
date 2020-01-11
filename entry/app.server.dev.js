@@ -22,9 +22,6 @@ const path = require('path');
 const ssr = require('vue-server-renderer');
 const colors = require('colors');
 
-const config = require('../config/compile');
-const serverConfig = require('../config/env').server;
-
 const cache = {
   clientContent: '',
   serverContent: '',
@@ -103,16 +100,16 @@ function serverWatch() {
 
 // 重新定义html
 function getDevHtml() {
-  // const {dll} = config;
   const html = fs.readFileSync(
     path.resolve(__dirname, '../index.template.html'),
     'utf-8',
   );
-  // const dllProdName = env.dll.prod.filter(item => item.name);
-  // dllProdName.forEach(name => {
-  //   html.replace(name, "");
-  // });
-  return html;
+  const htmlArr = [];
+  const htmlStart = html.split('<!--prod-env-start-->')[0];
+  const htmlEnd = html.split('<!--prod-env-end-->')[1];
+  htmlArr.push(htmlStart);
+  htmlArr.push(htmlEnd);
+  return htmlArr.join('\n');
 }
 
 // 重新定义render方法

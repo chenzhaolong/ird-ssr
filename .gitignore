@@ -4,7 +4,6 @@
 
 # Dependencies
 node_modules
-output
 
 #ignore files
 package-lock.json
