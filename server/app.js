@@ -6,12 +6,15 @@ import staticServer from 'koa-static';
 
 const path = require('path');
 const Koa = require('koa');
-const app = new Koa();
+const LoggerUtils = require('./utils/loggerUtils');
 const config = require('../config/env').server;
 const port =
   process.env.NODE_ENV === 'production'
     ? config.port.production
     : config.port.development;
+
+const app = new Koa();
+app.context.logger = LoggerUtils;
 
 // 静态资源
 const staticPath = path.resolve(__dirname, '../');

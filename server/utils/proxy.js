@@ -11,11 +11,12 @@ const defaultHost = env.server.proxy.host;
 
 async function proxy(ctx, item) {
   const { to, host = defaultHost, actions = {} } = item;
+  const method = get(ctx, 'method', 'get');
+  const header = get(ctx, 'request.header', {});
+  let body = get(ctx, `request.${method === 'get' ? 'query' : 'body'}`, {});
+  let [proxyHeader, proxyBody] = [{}, {}];
   try {
-    const method = get(ctx, 'method', 'get');
-    const header = get(ctx, 'request.header', {});
-    let body = get(ctx, `request.${method === 'get' ? 'query' : 'body'}`, {});
-    const [proxyHeader, proxyBody] = isFunction(actions.extraHandle)
+    [proxyHeader, proxyBody] = isFunction(actions.extraHandle)
       ? actions.extraHandle(ctx, header, body)
       : [header, body];
     const response = await ProxyFetch.fetch({
@@ -25,12 +26,30 @@ async function proxy(ctx, item) {
       body: proxyBody,
       header: proxyHeader,
     });
-    proxyLogger(ctx, to, host, 'success');
+
+    ctx.logger.api({
+      type: 'success',
+      msg: `host ${host} url ${to} body ${JSON.stringify(
+        proxyBody,
+      )} header ${JSON.stringify(proxyHeader)}`,
+      startTime: ctx.statistics.requestTime,
+      endTime: Date.now(),
+    });
+
     return isFunction(actions.extraAction)
       ? actions.extraAction(ctx, response)
       : response;
   } catch (err) {
-    proxyLogger(ctx, to, host, 'error');
+    ctx.logger.api({
+      type: 'error',
+      msg: `host ${host} url ${to} body ${JSON.stringify(
+        proxyBody,
+      )} header ${JSON.stringify(proxyHeader)}`,
+      startTime: ctx.statistics.requestTime,
+      endTime: Date.now(),
+      error: err,
+    });
+
     ctx.status = 500;
     if (err instanceof Error && 'not found' === err.message) {
       ctx.status = 404;
@@ -42,38 +61,6 @@ async function proxy(ctx, item) {
     }
     return isFunction(actions.extraError) ? actions.extraError(ctx, err) : err;
   }
-}
-
-function proxyLogger(ctx, url, host, error) {
-  if (process.env.NODE_ENV === 'production') {
-    return;
-  }
-  const { green, blue, cyan, magenta, red } = colors;
-  const endTime = Date.now();
-  const duringTime = endTime - ctx.statistics.startTime;
-  const startTimeStr = moment(ctx.statistics.requestTime).format(
-    'YYYY-MM-DD HH:mm:ss',
-  );
-  const endTimeStr = moment(endTime).format('YYYY-MM-DD HH:mm:ss');
-  let proxyLogStr;
-  if (type === 'success') {
-    proxyLogStr = `
-    ${green('proxy success')} --- host: ${blue(host)} url: ${blue(
-      url,
-    )} startTime: ${cyan(startTimeStr)} endTime: ${cyan(
-      endTimeStr,
-    )} duringTime ${magenta(duringTime)}
-  `;
-  } else {
-    proxyLogStr = `
-    ${red('proxy error')} --- host: ${blue(host)} url: ${blue(
-      url,
-    )} startTime: ${cyan(startTimeStr)} endTime: ${cyan(
-      endTimeStr,
-    )} error: ${red(error)}
-    `;
-  }
-  console.log(proxyLogStr);
 }
 
 export default proxy;

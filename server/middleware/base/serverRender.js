@@ -28,6 +28,7 @@ export default async (ctx, next) => {
   } else {
     const context = {
       request: ctx.request,
+      logger: ctx.logger,
       state: {},
     };
     const html = await ctx.render.renderToString(context);

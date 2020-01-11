@@ -4,7 +4,7 @@
 import bodyParser from 'koa-bodyparser';
 import compress from 'koa-compress';
 import statistics from './statistics';
-import Logger from './logger';
+import { Logger } from './logger';
 import Router from './router';
 import transmission from './transmission';
 import SSRRender from './serverRender';
