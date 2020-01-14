@@ -5,8 +5,6 @@
 import { createApp } from '../client/app';
 import { get } from 'lodash';
 import { PrefetchService } from '../service/preFetchService';
-import colors from 'colors';
-import moment from 'moment';
 
 export default context => {
   return new Promise((resolve, reject) => {

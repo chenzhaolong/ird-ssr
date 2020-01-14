@@ -9,6 +9,7 @@
  */
 import moment from 'moment';
 import colors from 'colors';
+import prodLogger from './proLogger';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -29,6 +30,7 @@ module.exports = {
     const message = message(msg);
     const logStr = `info: ${timeStr} ${message}`;
     if (isProd) {
+      prodLogger.info(logStr);
     } else {
       console.log(blue(logStr));
     }
@@ -40,6 +42,7 @@ module.exports = {
     const message = message(msg);
     const logStr = `error: ${timeStr} ${message}`;
     if (isProd) {
+      prodLogger.error(logStr);
     } else {
       console.log(red(logStr));
     }
@@ -51,6 +54,7 @@ module.exports = {
     const message = message(msg);
     const logStr = `warning: ${timeStr} ${message}`;
     if (isProd) {
+      prodLogger.warn(logStr);
     } else {
       console.log(yellow(logStr));
     }
@@ -61,6 +65,7 @@ module.exports = {
     const timeStr = formatTime(time);
     const logStr = `${timeStr}: ssr ${type} ${msg}`;
     if (isProd) {
+      prodLogger.ssr(logStr);
     } else {
       let render;
       switch (type) {
@@ -92,6 +97,7 @@ module.exports = {
       logStr = `${logStr} error ${message(error)}`;
     }
     if (isProd) {
+      prodLogger.api(logStr);
     } else {
       const render = type === 'success' ? cyan : magenta;
       console.log(render(logStr));

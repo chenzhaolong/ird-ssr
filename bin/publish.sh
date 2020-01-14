@@ -35,6 +35,11 @@ compiler() {
   esac
 }
 
+moveFile() {
+    cp ./bin/deploy.sh ./output/
+    cp ./config/pm2.config.js ./output/
+}
+
 publish() {
    while [ -n "$1" ]
    do
@@ -57,6 +62,7 @@ publish() {
 
    runDll
    compiler
+   moveFile
 }
 
 publish $1 $2 $3
