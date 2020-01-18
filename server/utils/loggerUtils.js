@@ -5,7 +5,6 @@
  * warn：警告
  * ssr：服务端渲染
  * api：api层
- * todo: log4js还没开发
  */
 import moment from 'moment';
 import colors from 'colors';
@@ -36,18 +35,6 @@ module.exports = {
     }
   },
 
-  error(options) {
-    const { msg, time = Date.now() } = options;
-    const timeStr = formatTime(time);
-    const message = message(msg);
-    const logStr = `error: ${timeStr} ${message}`;
-    if (isProd) {
-      prodLogger.error(logStr);
-    } else {
-      console.log(red(logStr));
-    }
-  },
-
   warn(options) {
     const { msg, time = Date.now() } = options;
     const timeStr = formatTime(time);
@@ -60,12 +47,24 @@ module.exports = {
     }
   },
 
+  error(options) {
+    const { msg, time = Date.now() } = options;
+    const timeStr = formatTime(time);
+    const message = message(msg);
+    const logStr = `error: ${timeStr} ${message}`;
+    if (isProd) {
+      prodLogger.error(logStr);
+    } else {
+      console.log(red(logStr));
+    }
+  },
+
   ssr(options) {
     const { msg, type, time = Date.now() } = options;
     const timeStr = formatTime(time);
     const logStr = `${timeStr}: ssr ${type} ${msg}`;
     if (isProd) {
-      prodLogger.ssr(logStr);
+      prodLogger.ssr(logStr, type);
     } else {
       let render;
       switch (type) {
@@ -86,18 +85,20 @@ module.exports = {
   },
 
   api(options) {
-    const { msg, type, startTime, endTime, error } = options;
+    const { msg, type, startTime, endTime, error, proxy = false } = options;
     const startTimeStr = formatTime(startTime);
     const endTimeStr = formatTime(endTime);
     const duringTime = endTime - startTime;
-    let logStr = `${endTimeStr}: proxy ${type} ${msg} startTime ${startTimeStr} endTime ${endTimeStr}`;
+    let logStr = `${endTimeStr} ${
+      proxy ? 'proxy' : ''
+    } status ${type} ${msg} startTime ${startTimeStr} endTime ${endTimeStr}`;
     if (type === 'success') {
       logStr = `${logStr} duringTime ${duringTime} ms`;
-    } else {
+    } else if (type === 'error') {
       logStr = `${logStr} error ${message(error)}`;
     }
     if (isProd) {
-      prodLogger.api(logStr);
+      prodLogger.api(logStr, type);
     } else {
       const render = type === 'success' ? cyan : magenta;
       console.log(render(logStr));

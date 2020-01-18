@@ -34,6 +34,7 @@ async function proxy(ctx, item) {
       )} header ${JSON.stringify(proxyHeader)}`,
       startTime: ctx.statistics.requestTime,
       endTime: Date.now(),
+      proxy: true,
     });
 
     return isFunction(actions.extraAction)
@@ -48,6 +49,7 @@ async function proxy(ctx, item) {
       startTime: ctx.statistics.requestTime,
       endTime: Date.now(),
       error: err,
+      proxy: true,
     });
 
     ctx.status = 500;

@@ -7,13 +7,31 @@ const logConfig = require('../../config/log4.config');
 log4js.configure(logConfig);
 
 export default {
-  info() {},
+  info(str) {
+    log4js.getLogger().info(str);
+  },
 
-  error() {},
+  warn(str) {
+    log4js.getLogger().warn(str);
+  },
 
-  warn() {},
+  error(str) {
+    log4js.getLogger('error').error(str);
+  },
 
-  ssr() {},
+  ssr(str, type) {
+    if (type === 'error') {
+      this.error(str);
+    } else {
+      log4js.getLogger('ssr').info(str);
+    }
+  },
 
-  api() {},
+  api(str, type) {
+    if (type === 'error') {
+      this.error(str);
+    } else {
+      log4js.getLogger('http').info(str);
+    }
+  },
 };
