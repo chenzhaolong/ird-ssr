@@ -5,6 +5,7 @@
  * warn：警告
  * ssr：服务端渲染
  * api：api层
+ * todo:后续进一步优化日志，支持更多的扩展
  */
 import moment from 'moment';
 import colors from 'colors';

@@ -37,7 +37,7 @@ compiler() {
 
 moveFile() {
     cp ./bin/deploy.sh ./output/
-    cp ./config/pm2.config.js ./output/
+    cp ./config/ecosystem.config.js ./output/
 }
 
 publish() {
