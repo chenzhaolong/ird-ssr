@@ -10,6 +10,12 @@ DLL="NO"
 # m=all：重新编译全部，默认值
 MODE="all"
 
+installNpm() {
+  if [ ! \( -d ./node_modules \) ];then
+    npm i
+  fi
+}
+
 runDll() {
   if [ $DLL = "YES" ];then
     npm run dll
@@ -38,6 +44,12 @@ compiler() {
 moveFile() {
     cp ./bin/deploy.sh ./output/
     cp ./config/ecosystem.config.js ./output/
+    cp ./package.json ./output/
+}
+
+makePack() {
+   tar -czvf output.`date +%Y-%m-%d-%H-%M-%S`.tar.gz ./output
+   rm -rf ./output
 }
 
 publish() {
@@ -60,9 +72,11 @@ publish() {
      mkdir ./output
    fi
 
+   #installNpm
    runDll
    compiler
    moveFile
+   #makePack
 }
 
 publish $1 $2 $3
