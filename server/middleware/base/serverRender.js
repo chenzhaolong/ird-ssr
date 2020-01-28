@@ -17,13 +17,14 @@ const assertSuffix = [
 ];
 
 export default async (ctx, next) => {
-  if (!config.server.ssr) {
-    await next();
-  }
   const hasAsset = assertSuffix.some(suffix => {
     return ctx.request.url.indexOf(suffix) !== -1;
   });
   if (hasAsset) {
+    ctx.statistics.isAsset = true;
+    await next();
+  } else if (!config.server.ssr) {
+    ctx.statistics.isPage = true;
     await next();
   } else {
     const context = {
@@ -36,10 +37,12 @@ export default async (ctx, next) => {
       if (html) {
         ctx.body = html;
       } else {
+        ctx.statistics.isPage = true;
         await next();
       }
     } catch (e) {
       if (e) {
+        ctx.statistics.isPage = true;
         await next();
       } else {
         throw new Error();

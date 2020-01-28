@@ -56,7 +56,7 @@ export default class ErrorHandle {
             ctx.type = 'json';
             ctx.body = { error: e };
           } else {
-            // ssr
+            // error page
             ctx.body = defaultErrorPage();
           }
         }

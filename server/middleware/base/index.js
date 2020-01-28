@@ -9,6 +9,7 @@ import Router from './router';
 import transmission from './transmission';
 import SSRRender from './serverRender';
 import ErrorHandle from '../../utils/errorHandle';
+import ssrDemotion from './ssrDemotion';
 
 export function beforeBizMW(app) {
   app.use(bodyParser());
@@ -23,4 +24,5 @@ export function afterBizMW(app) {
   app.use(Router.allowedMethods());
   app.use(transmission);
   app.use(SSRRender);
+  app.use(ssrDemotion);
 }
