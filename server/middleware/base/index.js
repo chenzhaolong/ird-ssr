@@ -8,12 +8,14 @@ import { Logger } from './logger';
 import Router from './router';
 import transmission from './transmission';
 import SSRRender from './serverRender';
+import ErrorHandle from '../../utils/errorHandle';
 
 export function beforeBizMW(app) {
   app.use(bodyParser());
   app.use(compress());
   app.use(statistics);
   app.use(Logger);
+  app.use(ErrorHandle.handle());
 }
 
 export function afterBizMW(app) {

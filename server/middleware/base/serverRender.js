@@ -31,12 +31,19 @@ export default async (ctx, next) => {
       logger: ctx.logger,
       state: {},
     };
-    const html = await ctx.render.renderToString(context);
-    if (html) {
-      ctx.body = html;
-    } else {
-      console.log('serverRenderError:');
-      await next();
+    try {
+      const html = await ctx.render.renderToString(context);
+      if (html) {
+        ctx.body = html;
+      } else {
+        await next();
+      }
+    } catch (e) {
+      if (e) {
+        await next();
+      } else {
+        throw new Error();
+      }
     }
   }
 };

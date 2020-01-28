@@ -3,6 +3,7 @@
  */
 import { beforeBizMW, afterBizMW } from './middleware/base';
 import staticServer from 'koa-static';
+import ErrorHandle from './utils/errorHandle';
 
 const path = require('path');
 const Koa = require('koa');
@@ -14,21 +15,29 @@ const port =
     : config.port.development;
 
 const app = new Koa();
+
+/*** 日志能力注入 *****/
 app.context.logger = LoggerUtils;
 
-// 静态资源
+/*** 静态资源 *****/
 const staticPath = path.resolve(__dirname, '../');
 const resource = staticServer(staticPath);
 app.use(resource);
 
-// 业务中间件注册之前
+/*** 错误处理注入 *****/
+// ErrorHandle.replace(async (ctx, next) => {
+//   await next();
+//   ctx.logger.info({msg: 'here'});
+// });
+
+/*** 业务中间件注册之前 *****/
 beforeBizMW(app);
 
 /*** 业务中间件逻辑 *****/
 
 /*** 业务中间件逻辑 *****/
 
-// 业务中间件注册之后
+/*** 业务中间件注册之后 *****/
 afterBizMW(app);
 
 app.listen(port, () => {

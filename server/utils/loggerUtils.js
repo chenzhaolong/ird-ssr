@@ -19,15 +19,16 @@ const formatTime = time => {
   return moment(time).format('YYYY-MM-DD HH:mm:ss.SSS');
 };
 
-const message = msg => {
+const getMessage = msg => {
   return typeof msg === 'string' ? msg : JSON.stringify(msg);
 };
 
 module.exports = {
   info(options) {
-    const { msg, time = Date.now() } = options;
+    const { msg, time = Date.now() } =
+      typeof options === 'string' ? { msg: options } : options;
     const timeStr = formatTime(time);
-    const message = message(msg);
+    const message = getMessage(msg);
     const logStr = `info: ${timeStr} ${message}`;
     if (isProd) {
       prodLogger.info(logStr);
@@ -37,9 +38,10 @@ module.exports = {
   },
 
   warn(options) {
-    const { msg, time = Date.now() } = options;
+    const { msg, time = Date.now() } =
+      typeof options === 'string' ? { msg: options } : options;
     const timeStr = formatTime(time);
-    const message = message(msg);
+    const message = getMessage(msg);
     const logStr = `warning: ${timeStr} ${message}`;
     if (isProd) {
       prodLogger.warn(logStr);
@@ -49,9 +51,10 @@ module.exports = {
   },
 
   error(options) {
-    const { msg, time = Date.now() } = options;
+    const { msg, time = Date.now() } =
+      typeof options === 'string' ? { msg: options } : options;
     const timeStr = formatTime(time);
-    const message = message(msg);
+    const message = getMessage(msg);
     const logStr = `error: ${timeStr} ${message}`;
     if (isProd) {
       prodLogger.error(logStr);
@@ -96,7 +99,7 @@ module.exports = {
     if (type === 'success') {
       logStr = `${logStr} duringTime ${duringTime} ms`;
     } else if (type === 'error') {
-      logStr = `${logStr} error ${message(error)}`;
+      logStr = `${logStr} error ${getMessage(error)}`;
     }
     if (isProd) {
       prodLogger.api(logStr, type);
