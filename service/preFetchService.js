@@ -61,9 +61,15 @@ export class PrefetchService {
         const preFetch = get(component, 'preFetch');
         // 预取数据
         if (preFetch && isFunction(preFetch)) {
-          return preFetch(globalStore, query);
+          return preFetch(globalStore, query).catch(e => {
+            if (e && typeof e === 'object' && e.message) {
+              throw e;
+            } else {
+              throw new Error(e || 'preFetch fail');
+            }
+          });
         } else {
-          return Promise.reject();
+          return Promise.reject('preFetch fail');
         }
       }),
     );

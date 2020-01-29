@@ -50,6 +50,10 @@ export default async (ctx, next) => {
       }
     } catch (e) {
       if (e) {
+        ctx.statistics.tempMsg = {
+          msg: `ssr is open, but error ${e.message || e}`,
+          type: 'error',
+        };
         ctx.statistics.isPage = true;
         await next();
       } else {

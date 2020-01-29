@@ -43,7 +43,7 @@ export default context => {
               msg: `${path} 预取失败 ${e.message}`,
               type: 'error',
             });
-            return reject(e);
+            return reject();
           });
       },
       e => {
@@ -51,7 +51,7 @@ export default context => {
           desc: `${path} onReady失败 ${e.message}`,
           type: 'error',
         });
-        return reject(e);
+        return reject();
       },
     );
   });

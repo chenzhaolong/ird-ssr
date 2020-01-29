@@ -8,7 +8,27 @@ Vue.use(Vuex);
 export function createStore() {
   const config = {
     ...globalState,
-    modules: {},
+    modules: {
+      demo: {
+        state() {
+          return { b: 1 };
+        },
+        actions: {
+          changeDemoA({ commit }, pl) {
+            return new Promise((res, rej) => {
+              commit('changeDemo', pl || 'yes');
+              rej();
+            });
+          },
+        },
+        mutations: {
+          changeDemo(st, playload) {
+            return (st.b = playload);
+          },
+        },
+        getters: {},
+      },
+    },
   };
 
   return new Vuex.Store({ ...config });

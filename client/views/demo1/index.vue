@@ -1,7 +1,7 @@
 <template>
     <div>
         <p @click="handle">
-            点击到demo1-{{a}}
+            点击到demo1-{{a}}-{{b}}
         </p>
     </div>
 </template>
@@ -16,6 +16,9 @@
         computed: mapState({
             a(st) {
                 return st.a + 'ok';
+            },
+            b(st) {
+                return st.demo.b;
             }
         }),
         methods: {
@@ -24,7 +27,7 @@
             }
         },
         preFetch(store, params) {
-            return Promise.resolve()
+            return store.dispatch('changeDemoA', 'ok');
         }
     }
 </script>
