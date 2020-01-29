@@ -27,7 +27,6 @@
 
         preFetch(store, params) {
             store.commit('change', 10);
-            console.log('here');
             return Promise.resolve()
         },
     }

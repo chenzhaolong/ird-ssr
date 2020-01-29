@@ -35,7 +35,10 @@ export class PrefetchService {
     return promise.then(matchComponents => {
       return Promise.all(
         matchComponents.map(component => {
-          const { preFetch } = component;
+          const { preFetch } = component.default
+            ? component.default
+            : component;
+          console.log('component.default', component.default);
           if (typeof preFetch == 'function') {
             return preFetch(globalStore, to.query);
           }
