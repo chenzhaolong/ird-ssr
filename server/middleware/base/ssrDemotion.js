@@ -4,6 +4,10 @@
 export default async (ctx, next) => {
   try {
     if (ctx.statistics.isPage) {
+      if (ctx.statistics.tempMsg) {
+        const { msg, type } = ctx.statistics.tempMsg;
+        ctx.logger[type](msg);
+      }
       const htmlArr = [];
       const originHtmlArr = ctx.originHtml.split('<!--vue-ssr-outlet-->');
 

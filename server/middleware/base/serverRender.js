@@ -25,6 +25,10 @@ export default async (ctx, next) => {
     await next();
   } else if (!config.server.ssr) {
     ctx.statistics.isPage = true;
+    ctx.statistics.tempMsg = {
+      msg: `${ctx.request.url} ssr is close, adopting csr render.`,
+      type: 'info',
+    };
     await next();
   } else {
     const context = {
@@ -38,6 +42,10 @@ export default async (ctx, next) => {
         ctx.body = html;
       } else {
         ctx.statistics.isPage = true;
+        ctx.statistics.tempMsg = {
+          msg: 'ssr is open, but html is not exist, adopting csr render.',
+          type: 'error',
+        };
         await next();
       }
     } catch (e) {
@@ -45,7 +53,7 @@ export default async (ctx, next) => {
         ctx.statistics.isPage = true;
         await next();
       } else {
-        throw new Error();
+        throw new Error('undefined reason');
       }
     }
   }

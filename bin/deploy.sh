@@ -14,7 +14,7 @@ existDependencies() {
 
 #获取应用名称
 getName() {
- a=$(awk 'NR==7{print}' ./output/ecosystem.config.js)
+ a=$(awk 'NR==8{print}' ./output/ecosystem.config.js)
  b=$(echo $a | awk '{print $2}')
  c=$(echo $b | awk -F"," '{print $1}')
  echo $c | sed $'s/\'//g'

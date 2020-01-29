@@ -1,10 +1,10 @@
 <template>
     <div>
         <span class="a1" @click="handle">
-            demo1
+            demo
         </span>
         <span class="a2" style="font-size: 12px">
-            demo2
+            demo
         </span>
     </div>
 </template>
@@ -27,6 +27,7 @@
 
         preFetch(store, params) {
             store.commit('change', 10);
+            console.log('here');
             return Promise.resolve()
         },
     }
