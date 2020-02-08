@@ -1,6 +1,7 @@
 # IDE files
 .idea
 .vscode
+.DS_Store
 
 # Dependencies
 node_modules

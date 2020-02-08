@@ -1,6 +1,5 @@
 /**
  * @file app的前端入口
- * todo: 处理这里的取消注册的逻辑
  */
 
 import { createApp } from '../client/app';

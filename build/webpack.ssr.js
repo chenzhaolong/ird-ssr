@@ -32,9 +32,13 @@ const webpackTpl = {
       },
       {
         test: /\.(png|jpg|svg|gif|ttf|woff|woff2)$/,
-        loader: 'file-loader',
-        query: {
-          name: 'img/[name].[ext]?[hash]',
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+          name: '[name].[ext]?[hash]',
+          outputPath: '/output/static/images/',
+          esModule: false,
+          emitFile: false,
         },
       },
     ],
