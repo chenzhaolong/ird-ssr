@@ -15,6 +15,13 @@
         "regenerator": true,
         "moduleName": "babel-runtime"
       }
+    ],
+    [
+      "component",
+      {
+        "libraryName": "element-ui",
+        "styleLibraryName": "theme-chalk"
+      }
     ]
   ]
 }
