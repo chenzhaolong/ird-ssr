@@ -127,15 +127,12 @@ class ClientCgi {
     return new Promise((resolve, reject) => {
       this.axios(config)
         .then(response => {
-          const data = get(response, clientEnv.respond.main, {});
-          const code = get(response, clientEnv.respond.code);
+          const data = get(response.data, clientEnv.respond.body, {});
+          const code = get(response.data, clientEnv.respond.code);
           if (code && this.validCode.indexOf(code) !== -1) {
             resolve(data);
           } else {
-            reject({
-              code,
-              msg: get(response, clientEnv.respond.msg),
-            });
+            reject(response.data);
           }
         })
         .catch(e => {
@@ -236,7 +233,6 @@ class ClientCgi {
   }
 }
 
-export default {
-  CgiService: new ClientCgi(),
-  ClientCgi,
-};
+export const CgiService = new ClientCgi();
+
+export const ClientService = ClientCgi;

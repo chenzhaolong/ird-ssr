@@ -9,9 +9,9 @@ module.exports = {
       prod: '',
     },
     respond: {
-      main: 'data.data',
-      code: 'data.code',
-      msg: 'data.message',
+      body: 'data',
+      code: 'code',
+      msg: 'message',
     },
     validCode: [200, 0],
     timeout: 3000,
