@@ -6,8 +6,12 @@ class MockServer {
 
   static send(ctx, next) {
     const url = ctx.request.url;
-    const response = MockServer.mapping[url] || {};
-    ctx.logger.info(`${url} return mock data`);
+    // 处理带有query的情况
+    const target = Object.keys(MockServer.mapping).filter(
+      value => url.indexOf(value) !== -1,
+    );
+    const response = target.length > 0 ? MockServer.mapping[target[0]] : {};
+    ctx.logger.info(`${url} return mock data ${JSON.stringify(response)}`);
     ctx.body = {
       code: 200,
       data: response,
