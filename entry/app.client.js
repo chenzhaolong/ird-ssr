@@ -23,5 +23,23 @@ router.beforeEach((to, from, next) => {
     });
 });
 
-// 挂载
+// 挂载，如果是csr或者是平滑降级的csr，执行preFetch
+if (!server.ssr || (window.ssrDemotion && window.ssrDemotion === 'yes')) {
+  PrefetchService.clientPrefetch(
+    router,
+    {
+      path: window.location.pathname,
+      params: {},
+      query: {},
+      hash: '',
+    },
+    store,
+  )
+    .then(d => {
+      app.$mount('#app');
+    })
+    .catch(e => {
+      app.$mount('#app');
+    });
+}
 app.$mount('#app', true);
