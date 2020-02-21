@@ -17,6 +17,8 @@ export default context => {
     const startTime = Date.now();
 
     context.logger.ssr({ msg: path, type: 'start', time: startTime });
+    // 同步全局数据到store之中
+    store.replaceState({ ...store.state, ...context.state });
 
     router.push(path);
     router.onReady(
@@ -27,7 +29,7 @@ export default context => {
         }
         PrefetchService.serverPrefetch(asyncComponents, store, query)
           .then(() => {
-            context.state = { ...context.state, ...store.state };
+            context.state = store.state;
 
             const endTime = Date.now();
             context.logger.ssr({

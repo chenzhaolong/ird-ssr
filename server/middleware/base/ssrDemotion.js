@@ -14,7 +14,7 @@ export default async (ctx, next) => {
       htmlArr.push(originHtmlArr[0]);
       htmlArr.push('<div id="app"></div>');
       htmlArr.push(
-        `<script type="text/javascript">window.ssrDemotion = 'yes'</script>`,
+        `<script type="text/javascript">window._ssrDemotion = 'yes'</script>`,
       );
       if (process.env.NODE_ENV === 'development') {
         htmlArr.push(
