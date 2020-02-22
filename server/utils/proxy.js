@@ -40,7 +40,7 @@ function proxy(ctx, item) {
         type: 'success',
         msg: `host ${host} url ${to} body ${JSON.stringify(
           proxyBody,
-        )} header ${JSON.stringify(proxyHeader)}`,
+        )} header ${JSON.stringify(proxyHeader)} response ${response}`,
         startTime: ctx.statistics.requestTime,
         endTime: Date.now(),
         proxy: true,

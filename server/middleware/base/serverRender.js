@@ -19,9 +19,11 @@ const assertSuffix = [
 ];
 
 export default async (ctx, next) => {
-  const hasAsset = assertSuffix.some(suffix => {
-    return ctx.request.url.indexOf(suffix) !== -1;
-  });
+  const hasAsset = assertSuffix
+    .filter(val => val && true)
+    .some(suffix => {
+      return ctx.request.url.indexOf(suffix) !== -1;
+    });
   if (hasAsset) {
     ctx.statistics.isAsset = true;
     await next();

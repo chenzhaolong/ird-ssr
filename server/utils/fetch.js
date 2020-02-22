@@ -7,15 +7,15 @@ const proxyConfig = require('../../config/env').server.proxy;
 class ProxyFetch {
   createAxios(host, header) {
     return axios.create({
-      baseURL: host,
+      // baseURL: host,
       timeout: proxyConfig.timeout,
       headers: header,
     });
   }
 
   getOptions(options) {
-    const { method, body, url } = options;
-    const params = { method, url };
+    const { method, body, url, host } = options;
+    const params = { method, url: host + url };
     const key = method === 'get' ? 'params' : 'data';
     params[key] = body;
     return params;
@@ -31,7 +31,7 @@ class ProxyFetch {
     return instance
       .request(requestOptions)
       .then(response => {
-        return response;
+        return response.data;
       })
       .catch(error => {
         throw error;
