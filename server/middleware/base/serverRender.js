@@ -14,6 +14,8 @@ const assertSuffix = [
   'woff',
   'woff2',
   '.ico',
+  config.server.apiPrefix, // 没有匹配到的api接口
+  config.server.proxy.apiPrefix,
 ];
 
 export default async (ctx, next) => {

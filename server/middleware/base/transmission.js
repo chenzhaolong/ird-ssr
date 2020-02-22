@@ -18,16 +18,15 @@ export default async (ctx, next) => {
   //   next();
   // }
   if (path && apiPrefix && path.indexOf(apiPrefix)) {
-    proxy(ctx, {
-      to: path,
-      host: chooseProxyHost(ctx, path),
-    })
-      .then(res => {
-        ctx.body = res;
-      })
-      .catch(err => {
-        ctx.body = err;
+    try {
+      const response = await proxy(ctx, {
+        to: path,
+        host: chooseProxyHost(ctx, path),
       });
+      ctx.body = ctx.makeBody(response);
+    } catch (err) {
+      ctx.body = err;
+    }
   } else {
     await next();
   }
