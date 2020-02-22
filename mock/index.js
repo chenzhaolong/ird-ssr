@@ -12,11 +12,7 @@ class MockServer {
     );
     const response = target.length > 0 ? MockServer.mapping[target[0]] : {};
     ctx.logger.info(`${url} return mock data ${JSON.stringify(response)}`);
-    ctx.body = {
-      code: 200,
-      data: response,
-      msg: '',
-    };
+    ctx.body = ctx.makeBody(response);
   }
 }
 

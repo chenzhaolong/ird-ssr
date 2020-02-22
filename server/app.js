@@ -19,6 +19,15 @@ const app = new Koa();
 /*** 日志能力注入 *****/
 app.context.logger = LoggerUtils;
 
+/*** 定义接口返回结构 ***/
+app.context.makeBody = function(body, code, msg) {
+  return {
+    code: code || 200,
+    data: body,
+    msg: msg || 'success',
+  };
+};
+
 /*** 静态资源 *****/
 const staticPath = path.resolve(__dirname, '../');
 const resource = staticServer(staticPath);

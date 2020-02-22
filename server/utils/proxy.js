@@ -37,9 +37,7 @@ async function proxy(ctx, item) {
       proxy: true,
     });
 
-    return isFunction(actions.extraAction)
-      ? actions.extraAction(ctx, response)
-      : response;
+    return response;
   } catch (err) {
     ctx.logger.api({
       type: 'error',
@@ -61,7 +59,7 @@ async function proxy(ctx, item) {
         code: 404,
       };
     }
-    return isFunction(actions.extraError) ? actions.extraError(ctx, err) : err;
+    return err;
   }
 }
 

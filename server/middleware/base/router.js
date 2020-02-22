@@ -3,7 +3,7 @@
  */
 import routes from '../../routes';
 import KoaRouter from 'koa-router';
-import { get, isArray } from 'lodash';
+import { get, isArray, isFunction } from 'lodash';
 import proxy from '../../utils/proxy';
 import proxyApis from '../../routes/proxyApi';
 
@@ -45,17 +45,32 @@ function registerProxyRoute() {
     const path = get(item, 'from', '');
     if (path) {
       const method = get(item, 'method', 'get').toLowerCase();
+      const extraAction = get(item, 'actions.extraAction', '');
+      const extraError = get(item, 'actions.extraError', '');
       // mock层
       if (process.env.NODE_ENV === 'development' && item.mockable) {
         router[method](path, MockServer.send);
       } else {
         router[method](path, async (ctx, next) => {
-          proxy(ctx, item)
+          let promise;
+          // 并发代理多个其他服务api
+          if (item.group && isArray(item.group) && item.group.length > 0) {
+            promise = Promise.all(
+              item.group.map(api => {
+                return proxy(ctx, { ...api, actions: item.actions || {} });
+              }),
+            );
+          } else {
+            promise = proxy(ctx, item);
+          }
+          promise
             .then(res => {
-              ctx.body = res;
+              ctx.body = isFunction(extraAction)
+                ? actions.extraAction(ctx, res)
+                : res;
             })
             .catch(err => {
-              ctx.body = err;
+              ctx.body = isFunction(extraError) ? extraError(ctx, err) : err;
             });
         });
       }
