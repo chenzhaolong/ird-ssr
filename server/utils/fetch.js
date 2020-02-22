@@ -1,5 +1,6 @@
 /**
  * @file 服务端请求底层
+ * tips: 尽量保持该文件的简洁性
  */
 import axios from 'axios';
 const proxyConfig = require('../../config/env').server.proxy;
