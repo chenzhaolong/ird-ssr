@@ -25,7 +25,7 @@ export default class SqlService {
    *     values: [[xx,xx,xx], [xx,xx,xx], ......]
    * }
    */
-  formatInsert() {
+  formatInsertSql() {
     const { table, values, fields } = this.options;
     if (!table) {
       return '';
@@ -48,7 +48,7 @@ export default class SqlService {
       case 'table':
         break;
       case 'insert':
-        return this.formatInsert();
+        return this.formatInsertSql();
       case 'remove':
         break;
       case 'select':
