@@ -7,11 +7,19 @@ import { get, isFunction } from 'lodash';
 const env = require('../../config/env');
 const defaultHost = env.server.proxy.host;
 
-function proxy(ctx, item) {
+/**
+ * 代理方法
+ * @param ctx
+ * @param item
+ * @param extra
+ * @returns {Promise}
+ */
+function proxy(ctx, item, extra = {}) {
   const { to, host = defaultHost, actions = {} } = item;
-  const method = get(ctx, 'method', 'get');
-  const header = get(ctx, 'request.header', {});
-  const body = method.toLowerCase() === 'get' ? ctx.query : ctx.request.body;
+  const method = get(item, 'method', ctx.method);
+  const header = extra.header || get(ctx, 'request.header', {});
+  const body =
+    extra.body || method.toLowerCase() === 'get' ? ctx.query : ctx.request.body;
 
   let [proxyHeader, proxyBody] = isFunction(actions.extraHandle)
     ? actions.extraHandle(ctx, header, body)

@@ -52,19 +52,15 @@ function registerProxyRoute() {
         router[method](path, MockServer.send);
       } else {
         router[method](path, async (ctx, next) => {
-          // let promise;
-          // // 并发代理多个其他服务api
-          // if (item.group && isArray(item.group) && item.group.length > 0) {
-          //   promise = Promise.all(item.group.map(api => {
-          //     return proxy(ctx, {...api, actions: item.actions || {}});
-          //   }));
-          // } else {
-          //   promise = proxy(ctx, item)
-          // }
           try {
-            const response = await proxy(ctx, item);
+            // 如存在group
+            let promise =
+              isArray(item.group) && item.group.length > 0
+                ? getMulProxy
+                : proxy;
+            const response = await promise(ctx, item);
             const body = isFunction(extraAction)
-              ? actions.extraAction(ctx, response)
+              ? extraAction(ctx, response)
               : response;
             ctx.body = ctx.makeBody(body);
           } catch (err) {
@@ -74,6 +70,18 @@ function registerProxyRoute() {
       }
     }
   });
+}
+
+function getMulProxy(ctx, item) {
+  const extraHandle = get(item, 'extraHandle', '');
+  return Promise.all(
+    item.group.map(config => {
+      if (isFunction(extraHandle)) {
+        config.actions = { extraHandle };
+      }
+      return proxy(ctx, config);
+    }),
+  );
 }
 
 registerRoute();
