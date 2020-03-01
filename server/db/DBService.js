@@ -56,12 +56,33 @@ export default class DBService extends Emitter {
     this.instance.end();
   }
 
+  /**
+   * {
+   *     table: xxx,
+   *     scheme: {
+   *         field: {type: xxx, defaultValue: xx, isNotNull: xx, isAutoIncrement: xx, isUnique: xx},
+   *         ...
+   *     },
+   *     primaryKey: xx,
+   *     foreignKey: { fields: [], foreignTable: xxx,foreignTableKey: [] }
+   *     engine: xx,
+   *     charset: xx,
+   *
+   * }
+   */
   createTable(config) {
     const sql = new SqlService(SqlService.Types.Table, config);
     const realSql = sql.getSql();
     return this.executeSql(realSql);
   }
 
+  /**
+   * {
+   *     table: xxx,
+   *     fields: [xx,xx,xx],
+   *     values: [[xx,xx,xx], [xx,xx,xx], ......]
+   * }
+   */
   insert(config) {
     const sql = new SqlService(SqlService.Types.Insert, config);
     const realSql = sql.getSql();
