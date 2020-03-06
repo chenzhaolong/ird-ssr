@@ -16,6 +16,7 @@ export default class DBService extends Emitter {
     this.password = password;
     this.database = database;
     this.instance = null;
+    this.sql = null;
     this.status = 'unconnect';
     // this.DBEvents = {
     //     FAIL: 'fail',
@@ -40,6 +41,7 @@ export default class DBService extends Emitter {
           resolve(err);
         } else {
           this.status = 'success';
+          this.sql = new SqlService();
           // this.emit(this.DBEvents.CONNECT);
           resolve();
         }
@@ -58,45 +60,59 @@ export default class DBService extends Emitter {
 
   /**
    * {
-   *     table: xxx,
+   *     table: string,
    *     scheme: {
-   *         field: {type: xxx, defaultValue: xx, isNotNull: xx, isAutoIncrement: xx, isUnique: xx},
+   *         field: {type: string, defaultValue: string, isNotNull: boolean, isAutoIncrement: boolean, isUnique: boolean},
    *         ...
    *     },
-   *     primaryKey: xx,
-   *     foreignKey: { fields: [], foreignTable: xxx,foreignTableKey: [] }
-   *     engine: xx,
-   *     charset: xx,
+   *     primaryKey: string,
+   *     foreignKey: { fields: array, foreignTable: string,foreignTableKey: array }
+   *     engine: string,
+   *     charset: string,
    *
    * }
    */
   createTable(config) {
-    const sql = new SqlService(SqlService.Types.Table, config);
+    const sql = this.sql.fillConfig(SqlService.Types.Table, config);
     const realSql = sql.getSql();
     return this.executeSql(realSql);
   }
 
   /**
    * {
-   *     table: xxx,
-   *     fields: [xx,xx,xx],
-   *     values: [[xx,xx,xx], [xx,xx,xx], ......]
+   *     table: string,
+   *     fields: array,
+   *     values: [array<string>, ......]
    * }
    */
   insert(config) {
-    const sql = new SqlService(SqlService.Types.Insert, config);
+    const sql = this.sql.fillConfig(SqlService.Types.Insert, config);
     const realSql = sql.getSql();
     return this.instance.executeSql(realSql);
   }
 
   remove(config) {
-    const sql = new SqlService(SqlService.Types.Remove, config);
+    const sql = this.sql.fillConfig(SqlService.Types.Remove, config);
     const realSql = sql.getSql();
     return this.instance.executeSql(realSql);
   }
 
   update() {
-    const sql = new SqlService(SqlService.Types.Update, config);
+    const sql = this.sql.fillConfig(SqlService.Types.Update, config);
+    const realSql = sql.getSql();
+    return this.instance.executeSql(realSql);
+  }
+
+  /**
+   * {
+   *     table: string,
+   *     columns: string | array<string>,
+   *     where: string | function,
+   *     limit: number
+   * }
+   */
+  select(config) {
+    const sql = this.sql.fillConfig(SqlService.Types.Query, config);
     const realSql = sql.getSql();
     return this.instance.executeSql(realSql);
   }

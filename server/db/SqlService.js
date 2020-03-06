@@ -1,12 +1,12 @@
 /**
  * @file sql语句服务类
  */
-import { isArray, isObject } from 'lodash';
+import { isArray, isObject, isString, isFunction, isNumber } from 'lodash';
 
 export default class SqlService {
   constructor(type, config) {
-    this.sqlType = type;
-    this.options = config;
+    this.sqlType = '';
+    this.options = {};
   }
 
   static Types = {
@@ -17,6 +17,41 @@ export default class SqlService {
     Update: 'update',
     Other: 'other',
   };
+
+  fillConfig(type, config) {
+    this.sqlType = type;
+    this.options = config;
+  }
+
+  clean() {
+    this.sqlType = '';
+    this.options = {};
+  }
+
+  formatSelectSql() {
+    const { table, columns, where, limit } = this.options;
+    if (!table) {
+      return '';
+    }
+    let sql = `select`;
+    if (isArray(columns) && columns.length > 0) {
+      sql = `${sql} ${columns.join(',')}`;
+    } else {
+      sql = `${sql} *`;
+    }
+    sql = `${sql} from ${table}`;
+    if (isString(where)) {
+      sql = `${sql} where ${where}`;
+    } else if (isFunction(where)) {
+      sql = `${sql} where ${where()}`;
+    }
+    if (isNumber(limit)) {
+      sql = `${sql} limit ${limit}`;
+    }
+    console.log('insert sql', sql);
+    this.clean();
+    return sql;
+  }
 
   formatInsertSql() {
     const { table, values, fields } = this.options;
@@ -34,7 +69,7 @@ export default class SqlService {
     });
     sql = `${sql};`;
     console.log('insert sql', sql);
-    this.options = {};
+    this.clean();
     return sql;
   }
 
@@ -86,7 +121,7 @@ export default class SqlService {
     }
     sql = `${sql};`;
     console.log('create table sql', sql);
-    this.options = {};
+    this.clean();
     return sql;
   }
 
@@ -99,6 +134,7 @@ export default class SqlService {
       case 'remove':
         break;
       case 'select':
+        return this.formatSelectSql();
         break;
       case 'update':
         break;
