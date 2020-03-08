@@ -5,13 +5,13 @@
 import Mysql from 'mysql';
 import SqlService from 'SqlService';
 import Emitter from 'events';
-const mysqlCOnfig = require('../../config/env').mysql;
-import { isFunction } from 'lodash';
+const mysqlConfig = require('../../config/env').mysql;
+import { isFunction, isString, isArray, isObject } from 'lodash';
 
 export default class DBService extends Emitter {
   constructor() {
     super();
-    const { host, user, password, database } = mysqlCOnfig;
+    const { host, user, password, database } = mysqlConfig;
     this.host = host;
     this.user = user;
     this.password = password;
@@ -57,6 +57,27 @@ export default class DBService extends Emitter {
   end() {
     // this.emit('end');
     this.instance.end();
+  }
+
+  hasTables(table) {
+    if (!isString(table)) {
+      return Promise.reject();
+    }
+    return this.executeSql('show tables;')
+      .then(data => {
+        if (isArray(data)) {
+          return data.some(item => {
+            return item['Tables_in_test_db'] === table;
+          });
+        } else if (isObject(data)) {
+          return data['Tables_in_test_db'] === table;
+        } else {
+          return false;
+        }
+      })
+      .catch(err => {
+        throw err;
+      });
   }
 
   /**
