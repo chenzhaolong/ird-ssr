@@ -6,6 +6,7 @@ import Mysql from 'mysql';
 import SqlService from 'SqlService';
 import Emitter from 'events';
 const mysqlCOnfig = require('../../config/env').mysql;
+import { isFunction } from 'lodash';
 
 export default class DBService extends Emitter {
   constructor() {
@@ -72,9 +73,12 @@ export default class DBService extends Emitter {
    *
    * }
    */
-  createTable(config) {
+  createTable(config, callback) {
     const sql = this.sql.fillConfig(SqlService.Types.Table, config);
-    const realSql = sql.getSql();
+    let realSql = sql.getSql();
+    if (isFunction(callback)) {
+      realSql = callback(realSql) || realSql;
+    }
     return this.executeSql(realSql);
   }
 
@@ -85,9 +89,12 @@ export default class DBService extends Emitter {
    *     values: [array<string>, ......]
    * }
    */
-  insert(config) {
+  insert(config, callback) {
     const sql = this.sql.fillConfig(SqlService.Types.Insert, config);
-    const realSql = sql.getSql();
+    let realSql = sql.getSql();
+    if (isFunction(callback)) {
+      realSql = callback(realSql) || realSql;
+    }
     return this.instance.executeSql(realSql);
   }
 
@@ -108,12 +115,21 @@ export default class DBService extends Emitter {
    *     table: string,
    *     columns: string | array<string>,
    *     where: string | function,
-   *     limit: number
+   *     limit: number,
+   *     order: [
+   *         {
+   *             name: string,
+   *             isDesc: boolean, defaultValue = true
+   *         }
+   *     ]
    * }
    */
-  select(config) {
+  select(config, callback) {
     const sql = this.sql.fillConfig(SqlService.Types.Query, config);
-    const realSql = sql.getSql();
+    let realSql = sql.getSql();
+    if (isFunction(callback)) {
+      realSql = callback(realSql) || realSql;
+    }
     return this.instance.executeSql(realSql);
   }
 

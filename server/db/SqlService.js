@@ -29,7 +29,7 @@ export default class SqlService {
   }
 
   formatSelectSql() {
-    const { table, columns, where, limit } = this.options;
+    const { table, columns, where, limit, order } = this.options;
     if (!table) {
       return '';
     }
@@ -48,7 +48,16 @@ export default class SqlService {
     if (isNumber(limit)) {
       sql = `${sql} limit ${limit}`;
     }
-    console.log('insert sql', sql);
+    if (isArray(order)) {
+      sql = `${sql} order by`;
+      order.forEach((item, index) => {
+        sql = `${sql} ${item.name}`;
+        sql = item.isDesc ? `${sql} desc` : `${sql} asc`;
+        sql = index === order.length - 1 ? sql : `${sql},`;
+      });
+    }
+    sql = `${sql};`;
+    console.log('select sql', sql);
     this.clean();
     return sql;
   }
