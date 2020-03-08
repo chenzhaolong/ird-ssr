@@ -95,7 +95,7 @@ export default class DBService extends Emitter {
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.instance.executeSql(realSql);
+    return this.executeSql(realSql);
   }
 
   /**
@@ -110,7 +110,7 @@ export default class DBService extends Emitter {
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.instance.executeSql(realSql);
+    return this.executeSql(realSql);
   }
 
   /**
@@ -131,7 +131,7 @@ export default class DBService extends Emitter {
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.instance.executeSql(realSql);
+    return this.executeSql(realSql);
   }
 
   /**
@@ -154,7 +154,7 @@ export default class DBService extends Emitter {
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.instance.executeSql(realSql);
+    return this.executeSql(realSql);
   }
 
   executeSql(sql) {

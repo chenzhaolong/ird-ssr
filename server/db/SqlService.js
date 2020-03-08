@@ -21,6 +21,7 @@ export default class SqlService {
   fillConfig(type, config) {
     this.sqlType = type;
     this.options = config;
+    return this;
   }
 
   clean() {
