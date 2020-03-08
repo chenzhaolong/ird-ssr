@@ -98,15 +98,39 @@ export default class DBService extends Emitter {
     return this.instance.executeSql(realSql);
   }
 
-  remove(config) {
+  /**
+   * {
+   *     table: string,
+   *     where: string | function
+   * }
+   */
+  remove(config, callback) {
     const sql = this.sql.fillConfig(SqlService.Types.Remove, config);
-    const realSql = sql.getSql();
+    let realSql = sql.getSql();
+    if (isFunction(callback)) {
+      realSql = callback(realSql) || realSql;
+    }
     return this.instance.executeSql(realSql);
   }
 
-  update() {
+  /**
+   * {
+   *     table: string,
+   *     data: [
+   *         {
+   *             name: string,
+   *             value: any
+   *         }
+   *     ],
+   *     where: string | function
+   * }
+   */
+  update(config, callback) {
     const sql = this.sql.fillConfig(SqlService.Types.Update, config);
-    const realSql = sql.getSql();
+    let realSql = sql.getSql();
+    if (isFunction(callback)) {
+      realSql = callback(realSql) || realSql;
+    }
     return this.instance.executeSql(realSql);
   }
 

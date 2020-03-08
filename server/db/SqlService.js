@@ -134,6 +134,42 @@ export default class SqlService {
     return sql;
   }
 
+  formatRemoveSql() {
+    const { table, where } = this.options;
+    let sql = `delete form ${table}`;
+    if (isString(where)) {
+      sql = `${sql} where ${where}`;
+    } else if (isFunction(where)) {
+      sql = `${sql} where ${where()}`;
+    }
+    sql = `${sql};`;
+    console.log('remove sql', sql);
+    this.clean();
+    return sql;
+  }
+
+  formatUpdateSql() {
+    const { table, data, where } = this.options;
+    if (isArray(data) && data.length > 0) {
+      let sql = `update ${table} set`;
+      data.forEach((item, index) => {
+        sql = `${sql} ${item.name}=${item.value}`;
+        sql = index === data.length - 1 ? sql : `${sql},`;
+      });
+      if (isString(where)) {
+        sql = `${sql} where ${where}`;
+      } else if (isFunction(where)) {
+        sql = `${sql} where ${where()}`;
+      }
+      sql = `${sql};`;
+      console.log('remove sql', sql);
+      this.clean();
+      return sql;
+    } else {
+      return '';
+    }
+  }
+
   getSql() {
     switch (this.sqlType) {
       case 'table':
@@ -141,14 +177,13 @@ export default class SqlService {
       case 'insert':
         return this.formatInsertSql();
       case 'remove':
-        break;
+        return this.formatRemoveSql();
       case 'select':
         return this.formatSelectSql();
-        break;
       case 'update':
-        break;
+        return this.formatUpdateSql();
       default:
-        break;
+        return '';
     }
   }
 }
