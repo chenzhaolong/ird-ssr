@@ -1,7 +1,7 @@
 /**
  * @file mysql代理层
  */
-import DBService from './DBService';
+import DBService from './utils/DBService';
 
 export const DBInstance = (function() {
   let instance = null;

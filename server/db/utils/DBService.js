@@ -3,9 +3,9 @@
  */
 
 import Mysql from 'mysql';
-import SqlService from 'SqlService';
+import SqlService from 'server/db/utils/SqlService';
 import Emitter from 'events';
-const mysqlConfig = require('../../config/env').mysql;
+const mysqlConfig = require('../../../config/env').mysql;
 import { isFunction, isString, isArray, isObject } from 'lodash';
 
 export default class DBService extends Emitter {
