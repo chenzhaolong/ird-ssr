@@ -84,29 +84,20 @@ export default class SqlService {
   }
 
   formatCreateTable() {
-    const {
-      table,
-      scheme,
-      primaryKey,
-      foreignKey,
-      engine,
-      charset,
-    } = this.options;
+    const { table, scheme, primaryKey, foreignKey, engine = 'InnoDB', charset = 'utf8' } = this.options;
     if (!table) {
       return '';
     }
     if (!isObject(scheme) && Object.keys(scheme).length === 0) {
       return '';
     }
-    let sql = `create table is no exists ${table} (`;
+    let sql = `create table if not exists ${table} (`;
     Object.keys(scheme).forEach(key => {
-      let { type, defaultValue, isNotNull, isAutoIncrement, isUnique } = scheme[
-        key
-      ];
+      let { type, defaultValue, isNotNull, isAutoIncrement, isUnique } = scheme[key];
       sql = `${sql} 
-       ${key} ${type} ${defaultValue || ''} ${isNotNull ? 'NOT NULL' : ''} ${
-        isAutoIncrement ? 'AUTO_INCREMENT' : ''
-      } ${isUnique ? 'unique' : ''},
+       ${key} ${type} ${defaultValue || ''} ${isNotNull ? 'NOT NULL' : ''} ${isAutoIncrement ? 'AUTO_INCREMENT' : ''} ${
+        isUnique ? 'unique' : ''
+      },
       `;
     });
     if (primaryKey) {
@@ -117,12 +108,11 @@ export default class SqlService {
     if (foreignKey) {
       const { fields, foreignTable, foreignTableKey } = foreignKey;
       sql = `${sql}
-       foreign key (${fields.join(
-         ',',
-       )}) references ${foreignTable} (${foreignTableKey.join(',')})
+       foreign key (${fields.join(',')}) references ${foreignTable} (${foreignTableKey.join(',')})
        )
       `;
     }
+    sql = `${sql} )`;
     if (engine) {
       sql = `${sql} engine=${engine}`;
     }

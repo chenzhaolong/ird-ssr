@@ -67,10 +67,10 @@ export default class DBService extends Emitter {
       .then(data => {
         if (isArray(data)) {
           return data.some(item => {
-            return item['Tables_in_test_db'] === table;
+            return item[`Tables_in_${mysqlConfig.database}`] === table;
           });
         } else if (isObject(data)) {
-          return data['Tables_in_test_db'] === table;
+          return data[`Tables_in_${mysqlConfig.database}`] === table;
         } else {
           return false;
         }
