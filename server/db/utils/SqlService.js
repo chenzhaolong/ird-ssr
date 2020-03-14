@@ -36,7 +36,7 @@ export default class SqlService {
     }
     let sql = `select`;
     if (isArray(columns) && columns.length > 0) {
-      sql = `${sql} ${columns.join(',')}`;
+      sql = `${sql} ${columns.join()}`;
     } else {
       sql = `${sql} *`;
     }
@@ -64,18 +64,29 @@ export default class SqlService {
   }
 
   formatInsertSql() {
-    const { table, values, fields } = this.options;
+    const { table, values } = this.options;
     if (!table) {
       return '';
     }
     let sql = `insert into ${table}`;
-    if (isArray(fields)) {
-      sql = `${sql} (${fields.join(',')})`;
+    let insertData = isArray(values) ? values : isObject(values) ? [values] : [];
+    let keys = Object.keys(insertData[0]);
+    if (insertData.some(item => Object.keys(item).length !== keys.length)) {
+      console.log('insert sql error:', insertData);
+      return '';
     }
+    sql = `${sql} (${keys.join()})`;
     sql = `${sql} values`;
-    const insertData = isArray(values) ? values : [{ ...values }];
     insertData.forEach(item => {
-      sql = `${sql} (${item.join(',')})`;
+      const data = keys.map(key => {
+        if (isString(item[key])) {
+          return `"${item[key]}"`;
+        } else {
+          return item[key];
+        }
+      });
+      console.log('data', data);
+      sql = `${sql} (${data.join()})`;
     });
     sql = `${sql};`;
     console.log('insert sql', sql);
@@ -94,11 +105,10 @@ export default class SqlService {
     let sql = `create table if not exists ${table} (`;
     Object.keys(scheme).forEach(key => {
       let { type, defaultValue, isNotNull, isAutoIncrement, isUnique } = scheme[key];
-      sql = `${sql} 
-       ${key} ${type} ${defaultValue || ''} ${isNotNull ? 'NOT NULL' : ''} ${isAutoIncrement ? 'AUTO_INCREMENT' : ''} ${
-        isUnique ? 'unique' : ''
-      },
-      `;
+      sql = `${sql}
+            ${key} ${type} ${defaultValue || ''} ${isNotNull ? 'NOT NULL' : ''} ${
+        isAutoIncrement ? 'AUTO_INCREMENT' : ''
+      } ${isUnique ? 'unique' : ''},`;
     });
     if (primaryKey) {
       sql = `${sql}
@@ -108,9 +118,7 @@ export default class SqlService {
     if (foreignKey) {
       const { fields, foreignTable, foreignTableKey } = foreignKey;
       sql = `${sql}
-       foreign key (${fields.join(',')}) references ${foreignTable} (${foreignTableKey.join(',')})
-       )
-      `;
+             foreign key (${fields.join()}) references ${foreignTable} (${foreignTableKey.join()}))`;
     }
     sql = `${sql} )`;
     if (engine) {

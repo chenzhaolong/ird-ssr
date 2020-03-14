@@ -106,8 +106,7 @@ export default class DBService extends Emitter {
   /**
    * {
    *     table: string,
-   *     fields: array,
-   *     values: [array<string>, ......]
+   *     values: array<object>
    * }
    */
   insert(config, callback) {
