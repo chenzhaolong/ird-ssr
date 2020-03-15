@@ -177,18 +177,23 @@ export default class DBService extends Emitter {
     return this.executeSql(realSql);
   }
 
-  executeSql(sql) {
+  executeSql(sql, params) {
     return new Promise((resolve, reject) => {
       if (!sql) {
         reject('sql is error');
       }
-      this.instance.query(sql, (err, result) => {
+      const cb = (err, result) => {
         if (err) {
           reject(err);
         } else {
           resolve(result);
         }
-      });
+      };
+      if (params) {
+        this.instance.query(sql, params, cb);
+      } else {
+        this.instance.query(sql, cb);
+      }
     });
   }
 }
