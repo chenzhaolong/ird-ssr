@@ -137,7 +137,7 @@ export default class SqlService {
 
   formatRemoveSql() {
     const { table, where } = this.options;
-    let sql = `delete form ${table}`;
+    let sql = `delete from ${table}`;
     if (isString(where)) {
       sql = `${sql} where ${where}`;
     } else if (isFunction(where)) {
@@ -150,11 +150,18 @@ export default class SqlService {
   }
 
   formatUpdateSql() {
-    const { table, data, where } = this.options;
+    let { table, data, where } = this.options;
+    if (isObject(data)) {
+      data = [{ ...data }];
+    }
     if (isArray(data) && data.length > 0) {
       let sql = `update ${table} set`;
       data.forEach((item, index) => {
-        sql = `${sql} ${item.name}=${item.value}`;
+        if (isString(item.value)) {
+          sql = `${sql} ${item.key}="${item.value}"`;
+        } else {
+          sql = `${sql} ${item.key}=${item.value}`;
+        }
         sql = index === data.length - 1 ? sql : `${sql},`;
       });
       if (isString(where)) {
