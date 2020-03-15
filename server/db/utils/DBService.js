@@ -177,6 +177,41 @@ export default class DBService extends Emitter {
     return this.executeSql(realSql);
   }
 
+  /**
+   * {
+   *     table: string,
+   *     type: string, enum=['add', 'modify', 'rename', 'drop', 'change']
+   *     // 下面只有一种配置
+   *     drop: {
+   *         field: string
+   *     },
+   *     add: {
+   *         field: string,
+   *         type: enum=Types
+   *     },
+   *     rename: {
+   *         tableName: string
+   *     },
+   *     modify: {
+   *         filed: string,
+   *         type: enum=Types,
+   *     },
+   *     change: {
+   *         oldField: string,
+   *         newField: string,
+   *         type: enum=Types
+   *     }
+   * }
+   */
+  changeTable(config, callback) {
+    const sql = this.sql.fillConfig(SqlService.Types.ALTER, config);
+    let realSql = sql.getSql();
+    if (isFunction(callback)) {
+      realSql = callback(realSql) || realSql;
+    }
+    return this.executeSql(realSql);
+  }
+
   executeSql(sql, params) {
     return new Promise((resolve, reject) => {
       if (!sql) {

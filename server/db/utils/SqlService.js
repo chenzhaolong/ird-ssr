@@ -15,7 +15,16 @@ export default class SqlService {
     Remove: 'remove',
     Query: 'select',
     Update: 'update',
+    ALTER: 'alter',
     Other: 'other',
+  };
+
+  static AlterTypes = {
+    Add: 'add',
+    Modify: 'modify',
+    Change: 'change',
+    Rename: 'rename',
+    Drop: 'drop',
   };
 
   fillConfig(type, config) {
@@ -178,6 +187,34 @@ export default class SqlService {
     }
   }
 
+  formatAlterSql() {
+    const { table, type, drop = {}, add = {}, rename = {}, modify = {}, change = {} } = this.options;
+    let sql = `alter table ${table}`;
+    switch (type) {
+      case 'drop':
+        sql = `${sql} drop ${drop.field};`;
+        break;
+      case 'add':
+        sql = `${sql} add ${add.field} ${add.type};`;
+        break;
+      case 'rename':
+        sql = `${sql} rename ${rename.tableName};`;
+        break;
+      case 'modify':
+        sql = `${sql} modify ${modify.field} ${modify.type};`;
+        break;
+      case 'change':
+        sql = `${sql} change ${change.oldField} ${change.newField} ${change.type};`;
+        break;
+      default:
+        sql = '';
+        break;
+    }
+    console.log('alter sql:', sql);
+    this.clean();
+    return sql;
+  }
+
   getSql() {
     switch (this.sqlType) {
       case 'table':
@@ -190,6 +227,8 @@ export default class SqlService {
         return this.formatSelectSql();
       case 'update':
         return this.formatUpdateSql();
+      case 'alter':
+        return this.formatAlterSql();
       default:
         return '';
     }
