@@ -37,6 +37,8 @@ export default class SqlService {
     let sql = `select`;
     if (isArray(columns) && columns.length > 0) {
       sql = `${sql} ${columns.join()}`;
+    } else if (isString(columns)) {
+      sql = `${sql} ${columns}`;
     } else {
       sql = `${sql} *`;
     }
@@ -58,7 +60,7 @@ export default class SqlService {
       });
     }
     sql = `${sql};`;
-    console.log('select sql', sql);
+    console.log('select sql:', sql);
     this.clean();
     return sql;
   }
@@ -89,7 +91,7 @@ export default class SqlService {
       sql = `${sql} (${data.join()})`;
     });
     sql = `${sql};`;
-    console.log('insert sql', sql);
+    console.log('insert sql:', sql);
     this.clean();
     return sql;
   }
@@ -128,7 +130,7 @@ export default class SqlService {
       sql = `${sql} charset=${charset}`;
     }
     sql = `${sql};`;
-    console.log('create table sql', sql);
+    console.log('create table sql:', sql);
     this.clean();
     return sql;
   }
@@ -142,7 +144,7 @@ export default class SqlService {
       sql = `${sql} where ${where()}`;
     }
     sql = `${sql};`;
-    console.log('remove sql', sql);
+    console.log('remove sql:', sql);
     this.clean();
     return sql;
   }
@@ -161,7 +163,7 @@ export default class SqlService {
         sql = `${sql} where ${where()}`;
       }
       sql = `${sql};`;
-      console.log('remove sql', sql);
+      console.log('update sql:', sql);
       this.clean();
       return sql;
     } else {
