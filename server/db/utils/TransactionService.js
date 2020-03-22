@@ -1,94 +1,79 @@
 /**
- * @file 连接mysql和操作mysql
+ * @file Mysql的事务
  */
 
-import Mysql from 'mysql';
-import SqlService from 'server/db/utils/SqlService';
-import Emitter from 'events';
-const mysqlConfig = require('../../../config/env').mysql;
 import { isFunction, isString, isArray, isObject } from 'lodash';
+import SqlService from './SqlService';
 
-export default class DBService extends Emitter {
-  constructor(instance) {
-    super();
-    const { host, user, password, database } = mysqlConfig;
-    this.host = host;
-    this.user = user;
-    this.password = password;
-    this.database = database;
-    this.instance = instance || null;
-    this.sql = instance ? new SqlService() : null;
-    this.status = instance ? 'success' : 'unconnect';
-    this.isPoolConnect = instance && true;
-    // this.DBEvents = {
-    //     FAIL: 'fail',
-    //     CONNECT: 'success',
-    //     TABLE: 'table',
-    //     END: 'end'
-    // }
+const TransactionStatus = {
+  START: 'start',
+  UNSTART: 'unStart',
+  STARTFAIL: 'startFail',
+  RELEASE: 'release',
+};
+
+export default class TransactionService {
+  constructor(connect) {
+    this.transaction = connect;
+    this.sql = new SqlService();
+    this.status = TransactionStatus.UNSTART;
+    this.result = {};
   }
 
-  connect() {
-    if (this.isConnect()) {
-      return Promise.resolve();
-    }
+  canNotExecute() {
+    const { STARTFAIL, UNSTART } = TransactionStatus;
+    return [STARTFAIL, UNSTART].indexOf(this.status) !== -1;
+  }
+
+  start() {
     return new Promise((resolve, reject) => {
-      this.instance = Mysql.createConnection({
-        host: this.host,
-        user: this.user,
-        password: this.password,
-        database: this.database,
-      });
-      this.instance.connect(err => {
+      this.transaction.beginTransaction(err => {
         if (err) {
-          this.status = 'fail';
-          // this.emit(this.DBEvents.FAIL, err);
-          resolve(err);
+          console.log(err);
+          this.status = TransactionStatus.STARTFAIL;
+          reject(false);
         } else {
-          this.status = 'success';
-          this.sql = new SqlService();
-          // this.emit(this.DBEvents.CONNECT);
-          resolve();
+          this.status = TransactionStatus.START;
+          resolve(true);
         }
       });
     });
   }
 
-  isConnect() {
-    return this.status === 'success';
+  rollback() {
+    this.transaction.rollback(() => {
+      this.release();
+    });
   }
 
-  end() {
-    // this.emit('end');
-    this.instance.end();
+  release() {
+    this.status = TransactionStatus.RELEASE;
+    this.transaction.release();
   }
 
-  hasTables(table) {
-    if (!isString(table)) {
-      return Promise.reject();
-    }
-    return this.executeSql('show tables;')
-      .then(data => {
-        if (isArray(data)) {
-          return data.some(item => {
-            return item[`Tables_in_${mysqlConfig.database}`] === table;
-          });
-        } else if (isObject(data)) {
-          return data[`Tables_in_${mysqlConfig.database}`] === table;
+  commit() {
+    return new Promise((resolve, reject) => {
+      this.transaction.commit(err => {
+        if (err) {
+          this.release();
+          reject(err);
         } else {
-          return false;
+          this.release();
+          resolve(this.result);
         }
-      })
-      .catch(err => {
-        throw err;
       });
+    });
+  }
+
+  makeSqlConfig(fn) {
+    return fn(this.result);
   }
 
   /**
    * {
    *     table: string,
    *     scheme: {
-   *         field: {type: string, defaultValue: string, isNotNull: boolean, isAutoIncrement: boolean, isUnique: boolean},
+   *         fieldName: {type: string, defaultValue: string, isNotNull: boolean, isAutoIncrement: boolean, isUnique: boolean},
    *         ...
    *     },
    *     primaryKey: string,
@@ -99,6 +84,9 @@ export default class DBService extends Emitter {
    * }
    */
   createTable(config, callback) {
+    if (this.canNotExecute()) {
+      return Promise.resolve(false);
+    }
     const sql = this.sql.fillConfig(SqlService.Types.Table, config);
     let realSql = sql.getSql();
     if (isFunction(callback)) {
@@ -114,6 +102,9 @@ export default class DBService extends Emitter {
    * }
    */
   insert(config, callback) {
+    if (this.canNotExecute()) {
+      return Promise.resolve(false);
+    }
     const sql = this.sql.fillConfig(SqlService.Types.Insert, config);
     let realSql = sql.getSql();
     if (isFunction(callback)) {
@@ -129,6 +120,9 @@ export default class DBService extends Emitter {
    * }
    */
   remove(config, callback) {
+    if (this.canNotExecute()) {
+      return Promise.resolve(false);
+    }
     const sql = this.sql.fillConfig(SqlService.Types.Remove, config);
     let realSql = sql.getSql();
     if (isFunction(callback)) {
@@ -150,6 +144,9 @@ export default class DBService extends Emitter {
    * }
    */
   update(config, callback) {
+    if (this.canNotExecute()) {
+      return Promise.resolve(false);
+    }
     const sql = this.sql.fillConfig(SqlService.Types.Update, config);
     let realSql = sql.getSql();
     if (isFunction(callback)) {
@@ -173,6 +170,9 @@ export default class DBService extends Emitter {
    * }
    */
   select(config, callback) {
+    if (this.canNotExecute()) {
+      return Promise.resolve(false);
+    }
     const sql = this.sql.fillConfig(SqlService.Types.Query, config);
     let realSql = sql.getSql();
     if (isFunction(callback)) {
@@ -208,6 +208,9 @@ export default class DBService extends Emitter {
    * }
    */
   changeTable(config, callback) {
+    if (this.canNotExecute()) {
+      return Promise.resolve(false);
+    }
     const sql = this.sql.fillConfig(SqlService.Types.ALTER, config);
     let realSql = sql.getSql();
     if (isFunction(callback)) {
@@ -221,20 +224,22 @@ export default class DBService extends Emitter {
       if (!sql) {
         reject('sql is error');
       }
+      if (this.canNotExecute()) {
+        return resolve(false);
+      }
       const cb = (err, result) => {
         if (err) {
-          reject(err);
+          console.log(err);
+          resolve(false);
         } else {
-          resolve(result);
-        }
-        if (this.isPoolConnect) {
-          this.instance.release();
+          this.result = result;
+          resolve(true);
         }
       };
       if (params) {
-        this.instance.query(sql, params, cb);
+        this.transaction.query(sql, params, cb);
       } else {
-        this.instance.query(sql, cb);
+        this.transaction.query(sql, cb);
       }
     });
   }

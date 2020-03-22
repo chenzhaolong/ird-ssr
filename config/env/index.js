@@ -37,6 +37,7 @@ module.exports = {
     user: '',
     password: '',
     database: '',
+    poolNumbers: 1,
   },
 
   redis: {},
