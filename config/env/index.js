@@ -31,7 +31,13 @@ module.exports = {
     },
   },
 
-  mysql: {},
+  mysql: {
+    open: false,
+    host: '',
+    user: '',
+    password: '',
+    database: '',
+  },
 
   redis: {},
 };

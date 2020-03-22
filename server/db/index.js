@@ -2,6 +2,7 @@
  * @file mysql代理层
  */
 import DBService from './utils/DBService';
+const mysqlConfig = require('../config/env').mysql;
 
 export const DBInstance = (function() {
   let instance = null;
@@ -13,3 +14,21 @@ export const DBInstance = (function() {
     }
   };
 })();
+
+export const ConnectMysql = async (ctx, next) => {
+  if (mysqlConfig.open) {
+    const db = new DBInstance();
+    try {
+      if (!db.isConnect()) {
+        await db.connect();
+      }
+      ctx.db = db;
+      await next();
+    } catch (e) {
+      console.log('err', e);
+      await next();
+    }
+  } else {
+    await next();
+  }
+};

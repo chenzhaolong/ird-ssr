@@ -3,16 +3,14 @@
  */
 import { beforeBizMW, afterBizMW } from './middleware/base';
 import staticServer from 'koa-static';
+import { ConnectMysql } from './db';
 import ErrorHandle from './utils/errorHandle';
 
 const path = require('path');
 const Koa = require('koa');
 const LoggerUtils = require('./utils/loggerUtils');
 const config = require('../config/env').server;
-const port =
-  process.env.NODE_ENV === 'production'
-    ? config.port.production
-    : config.port.development;
+const port = process.env.NODE_ENV === 'production' ? config.port.production : config.port.development;
 
 const app = new Koa();
 
@@ -43,6 +41,7 @@ app.use(resource);
 beforeBizMW(app);
 
 /*** 业务中间件逻辑 *****/
+app.use(ConnectMysql);
 
 /*** 业务中间件逻辑 *****/
 
