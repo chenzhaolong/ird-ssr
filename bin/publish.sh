@@ -72,11 +72,11 @@ publish() {
      mkdir ./output
    fi
 
-   #installNpm
+   installNpm
    runDll
    compiler
    moveFile
-   #makePack
+   makePack
 }
 
 publish $1 $2 $3
