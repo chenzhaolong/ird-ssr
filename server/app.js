@@ -41,7 +41,6 @@ app.use(resource);
 beforeBizMW(app);
 
 /*** 业务中间件逻辑 *****/
-app.use(ConnectMysql);
 
 /*** 业务中间件逻辑 *****/
 

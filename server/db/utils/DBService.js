@@ -3,35 +3,25 @@
  */
 
 import Mysql from 'mysql';
-import SqlService from 'server/db/utils/SqlService';
-import Emitter from 'events';
-const mysqlConfig = require('../../../config/env').mysql;
+import SqlService from './SqlService';
 import { isFunction, isString, isArray, isObject } from 'lodash';
 
-export default class DBService extends Emitter {
+const mysqlConfig = require('../../../config/env').mysql;
+const Logger = require('../../utils/loggerUtils');
+
+export default class DBService {
   constructor(instance) {
-    super();
     const { host, user, password, database } = mysqlConfig;
     this.host = host;
     this.user = user;
     this.password = password;
     this.database = database;
     this.instance = instance || null;
-    this.sql = instance ? new SqlService() : null;
-    this.status = instance ? 'success' : 'unConnect';
+    this.sql = new SqlService();
     this.isPoolConnect = instance && true;
-    // this.DBEvents = {
-    //     FAIL: 'fail',
-    //     CONNECT: 'success',
-    //     TABLE: 'table',
-    //     END: 'end'
-    // }
   }
 
   connect() {
-    if (this.isConnect()) {
-      return Promise.resolve();
-    }
     return new Promise((resolve, reject) => {
       this.instance = Mysql.createConnection({
         host: this.host,
@@ -39,33 +29,14 @@ export default class DBService extends Emitter {
         password: this.password,
         database: this.database,
       });
+      if (!mysqlConfig.open) {
+        return reject('mysql is close.');
+      }
       this.instance.connect(err => {
-        if (err) {
-          this.status = 'fail';
-          // this.emit(this.DBEvents.FAIL, err);
-          resolve(err);
-        } else {
-          this.status = 'success';
-          this.sql = new SqlService();
-          // this.emit(this.DBEvents.CONNECT);
-          resolve();
-        }
-      });
-    });
-  }
-
-  isConnect() {
-    return this.status === 'success';
-  }
-
-  end(fn) {
-    this.status = 'unConnect';
-    return new Promise((resolve, reject) => {
-      this.instance.end(err => {
         if (err) {
           reject(err);
         } else {
-          isFunction(fn) && fn();
+          Logger.info('mysql is success connect.');
           resolve();
         }
       });
@@ -76,7 +47,7 @@ export default class DBService extends Emitter {
     if (!isString(table)) {
       return Promise.reject();
     }
-    return this.executeSql('show tables;')
+    return this.executeSqlWithConnection('show tables;')
       .then(data => {
         if (isArray(data)) {
           return data.some(item => {
@@ -93,11 +64,26 @@ export default class DBService extends Emitter {
       });
   }
 
+  end() {
+    const cb = err => {
+      if (err) {
+        Logger.error(`mysql error: ${err.message}`);
+      } else {
+        Logger.info('connection is release');
+      }
+    };
+    if (this.isPoolConnect) {
+      this.instance.release(cb);
+    } else {
+      this.instance.end(cb);
+    }
+  }
+
   /**
    * {
    *     table: string,
    *     scheme: {
-   *         field: {type: string, defaultValue: string, isNotNull: boolean, isAutoIncrement: boolean, isUnique: boolean},
+   *         fieldName: {type: string, defaultValue: string, isNotNull: boolean, isAutoIncrement: boolean, isUnique: boolean},
    *         ...
    *     },
    *     primaryKey: string,
@@ -113,7 +99,7 @@ export default class DBService extends Emitter {
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.executeSql(realSql);
+    return this.executeSqlWithConnection(realSql);
   }
 
   /**
@@ -128,7 +114,7 @@ export default class DBService extends Emitter {
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.executeSql(realSql);
+    return this.executeSqlWithConnection(realSql);
   }
 
   /**
@@ -143,7 +129,7 @@ export default class DBService extends Emitter {
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.executeSql(realSql);
+    return this.executeSqlWithConnection(realSql);
   }
 
   /**
@@ -164,7 +150,7 @@ export default class DBService extends Emitter {
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.executeSql(realSql);
+    return this.executeSqlWithConnection(realSql);
   }
 
   /**
@@ -187,7 +173,7 @@ export default class DBService extends Emitter {
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.executeSql(realSql);
+    return this.executeSqlWithConnection(realSql);
   }
 
   /**
@@ -222,7 +208,17 @@ export default class DBService extends Emitter {
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.executeSql(realSql);
+    return this.executeSqlWithConnection(realSql);
+  }
+
+  async executeSqlWithConnection(sql, params) {
+    try {
+      await this.connect();
+      return this.executeSql(sql, params);
+    } catch (e) {
+      Logger.error({ msg: e });
+      return Promise.reject(e);
+    }
   }
 
   executeSql(sql, params) {
@@ -236,9 +232,7 @@ export default class DBService extends Emitter {
         } else {
           resolve(result);
         }
-        if (this.isPoolConnect) {
-          this.instance.release();
-        }
+        this.end();
       };
       if (params) {
         this.instance.query(sql, params, cb);

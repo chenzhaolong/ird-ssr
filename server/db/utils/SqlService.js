@@ -2,6 +2,7 @@
  * @file sql语句服务类
  */
 import { isArray, isObject, isString, isFunction, isNumber } from 'lodash';
+const Logger = require('../../utils/loggerUtils');
 
 export default class SqlService {
   constructor(type, config) {
@@ -69,7 +70,7 @@ export default class SqlService {
       });
     }
     sql = `${sql};`;
-    console.log('select sql:', sql);
+    Logger.info(`select sql: ${sql}`);
     this.clean();
     return sql;
   }
@@ -83,7 +84,6 @@ export default class SqlService {
     let insertData = isArray(values) ? values : isObject(values) ? [values] : [];
     let keys = Object.keys(insertData[0]);
     if (insertData.some(item => Object.keys(item).length !== keys.length)) {
-      console.log('insert sql error:', insertData);
       return '';
     }
     sql = `${sql} (${keys.join()})`;
@@ -96,11 +96,10 @@ export default class SqlService {
           return item[key];
         }
       });
-      console.log('data', data);
       sql = `${sql} (${data.join()})`;
     });
     sql = `${sql};`;
-    console.log('insert sql:', sql);
+    Logger.info(`insert sql: ${sql}`);
     this.clean();
     return sql;
   }
@@ -139,7 +138,7 @@ export default class SqlService {
       sql = `${sql} charset=${charset}`;
     }
     sql = `${sql};`;
-    console.log('create table sql:', sql);
+    Logger.info(`create table sql: ${sql}`);
     this.clean();
     return sql;
   }
@@ -153,7 +152,7 @@ export default class SqlService {
       sql = `${sql} where ${where()}`;
     }
     sql = `${sql};`;
-    console.log('remove sql:', sql);
+    Logger.info(`remove sql: ${sql}`);
     this.clean();
     return sql;
   }
@@ -179,7 +178,7 @@ export default class SqlService {
         sql = `${sql} where ${where()}`;
       }
       sql = `${sql};`;
-      console.log('update sql:', sql);
+      Logger.info(`update sql: ${sql}`);
       this.clean();
       return sql;
     } else {
@@ -210,7 +209,7 @@ export default class SqlService {
         sql = '';
         break;
     }
-    console.log('alter sql:', sql);
+    Logger.info(`alter sql: ${sql}`);
     this.clean();
     return sql;
   }
