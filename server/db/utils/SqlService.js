@@ -4,21 +4,23 @@
 import { isArray, isObject, isString, isFunction, isNumber } from 'lodash';
 const Logger = require('../../utils/loggerUtils');
 
+const Types = {
+  Table: 'table',
+  Insert: 'insert',
+  Remove: 'remove',
+  Query: 'select',
+  Update: 'update',
+  ALTER: 'alter',
+  HasTable: 'hasTable',
+  Other: 'other',
+};
 export default class SqlService {
   constructor(type, config) {
     this.sqlType = '';
     this.options = {};
   }
 
-  static Types = {
-    Table: 'table',
-    Insert: 'insert',
-    Remove: 'remove',
-    Query: 'select',
-    Update: 'update',
-    ALTER: 'alter',
-    Other: 'other',
-  };
+  static Types = Types;
 
   static AlterTypes = {
     Add: 'add',
@@ -214,20 +216,29 @@ export default class SqlService {
     return sql;
   }
 
+  formatHasTable() {
+    const sql = 'show tables;';
+    Logger.info(`hasTable sql: ${sql}`);
+    this.clean();
+    return sql;
+  }
+
   getSql() {
     switch (this.sqlType) {
-      case 'table':
+      case Types.Table:
         return this.formatCreateTable();
-      case 'insert':
+      case Types.Insert:
         return this.formatInsertSql();
-      case 'remove':
+      case Types.Remove:
         return this.formatRemoveSql();
-      case 'select':
+      case Types.Query:
         return this.formatSelectSql();
-      case 'update':
+      case Types.Update:
         return this.formatUpdateSql();
-      case 'alter':
+      case Types.ALTER:
         return this.formatAlterSql();
+      case Types.HasTable:
+        return this.formatHasTable();
       default:
         return '';
     }

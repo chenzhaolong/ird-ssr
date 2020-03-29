@@ -8,6 +8,7 @@ import TransactionService from './TransactionService';
 import DBService from './DBService';
 
 const mysqlConfig = require('../../../config/env').mysql;
+const Logger = require('../../utils/loggerUtils');
 
 export default class DBPoolService extends Emitter {
   constructor() {
@@ -26,9 +27,10 @@ export default class DBPoolService extends Emitter {
     return new Promise((resolve, reject) => {
       this.instancePool.getConnection((err, connection) => {
         if (err) {
-          console.log(err);
+          Logger.error(`getTransactionConnection error: ${err.message}`);
           reject(false);
         } else {
+          Logger.info('pool connect success');
           resolve(new TransactionService(connection));
         }
       });
@@ -39,9 +41,10 @@ export default class DBPoolService extends Emitter {
     return new Promise((resolve, reject) => {
       this.instancePool.getConnection((err, connection) => {
         if (err) {
-          console.log(err);
+          Logger.error(`getDBConnection error: ${err.message}`);
           reject(err);
         } else {
+          Logger.info('pool connect success');
           resolve(new DBService(connection));
         }
       });

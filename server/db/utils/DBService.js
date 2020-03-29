@@ -43,11 +43,12 @@ export default class DBService {
     });
   }
 
-  hasTables(table) {
+  hasTables(table, options) {
     if (!isString(table)) {
       return Promise.reject();
     }
-    return this.executeSqlWithConnection('show tables;')
+    const sql = this.sql.fillConfig(SqlService.Types.HasTable).getSql();
+    return this.executeSqlWithConnection(sql, null, options)
       .then(data => {
         if (isArray(data)) {
           return data.some(item => {
@@ -65,17 +66,17 @@ export default class DBService {
   }
 
   end() {
-    const cb = err => {
-      if (err) {
-        Logger.error(`mysql error: ${err.message}`);
-      } else {
-        Logger.info('connection is release');
-      }
-    };
     if (this.isPoolConnect) {
-      this.instance.release(cb);
+      this.instance.release();
+      Logger.info('connection is release');
     } else {
-      this.instance.end(cb);
+      this.instance.end(err => {
+        if (err) {
+          Logger.error(`mysql error: ${err.message}`);
+        } else {
+          Logger.info('connection is end');
+        }
+      });
     }
   }
 
@@ -93,13 +94,13 @@ export default class DBService {
    *
    * }
    */
-  createTable(config, callback) {
+  createTable(config, options, callback) {
     const sql = this.sql.fillConfig(SqlService.Types.Table, config);
     let realSql = sql.getSql();
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.executeSqlWithConnection(realSql);
+    return this.executeSqlWithConnection(realSql, null, options);
   }
 
   /**
@@ -108,13 +109,13 @@ export default class DBService {
    *     values: array<object>
    * }
    */
-  insert(config, callback) {
+  insert(config, options, callback) {
     const sql = this.sql.fillConfig(SqlService.Types.Insert, config);
     let realSql = sql.getSql();
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.executeSqlWithConnection(realSql);
+    return this.executeSqlWithConnection(realSql, null, options);
   }
 
   /**
@@ -123,13 +124,13 @@ export default class DBService {
    *     where: string | function
    * }
    */
-  remove(config, callback) {
+  remove(config, options, callback) {
     const sql = this.sql.fillConfig(SqlService.Types.Remove, config);
     let realSql = sql.getSql();
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.executeSqlWithConnection(realSql);
+    return this.executeSqlWithConnection(realSql, null, options);
   }
 
   /**
@@ -144,13 +145,13 @@ export default class DBService {
    *     where: string | function
    * }
    */
-  update(config, callback) {
+  update(config, options, callback) {
     const sql = this.sql.fillConfig(SqlService.Types.Update, config);
     let realSql = sql.getSql();
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.executeSqlWithConnection(realSql);
+    return this.executeSqlWithConnection(realSql, null, options);
   }
 
   /**
@@ -167,13 +168,13 @@ export default class DBService {
    *     ]
    * }
    */
-  select(config, callback) {
+  select(config, options, callback) {
     const sql = this.sql.fillConfig(SqlService.Types.Query, config);
     let realSql = sql.getSql();
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.executeSqlWithConnection(realSql);
+    return this.executeSqlWithConnection(realSql, null, options);
   }
 
   /**
@@ -202,26 +203,33 @@ export default class DBService {
    *     }
    * }
    */
-  changeTable(config, callback) {
+  changeTable(config, options, callback) {
     const sql = this.sql.fillConfig(SqlService.Types.ALTER, config);
     let realSql = sql.getSql();
     if (isFunction(callback)) {
       realSql = callback(realSql) || realSql;
     }
-    return this.executeSqlWithConnection(realSql);
+    return this.executeSqlWithConnection(realSql, null, options);
   }
 
-  async executeSqlWithConnection(sql, params) {
+  async executeSqlWithConnection(sql, params, options) {
     try {
-      await this.connect();
-      return this.executeSql(sql, params);
+      if (!this.isPoolConnect) {
+        await this.connect();
+      }
+      return this.executeSql(sql, params, options);
     } catch (e) {
       Logger.error({ msg: e });
       return Promise.reject(e);
     }
   }
 
-  executeSql(sql, params) {
+  /**
+   * @param {string} sql sql语句
+   * @param {object} params sql参数
+   * @param {object} options 额外配置参数 {keepConnection: boolean 是否继续保持连接}
+   */
+  executeSql(sql, params, options = { keepConnection: false }) {
     return new Promise((resolve, reject) => {
       if (!sql) {
         reject('sql is error');
@@ -232,7 +240,9 @@ export default class DBService {
         } else {
           resolve(result);
         }
-        this.end();
+        if (!options.keepConnection) {
+          this.end();
+        }
       };
       if (params) {
         this.instance.query(sql, params, cb);
