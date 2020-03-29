@@ -25,50 +25,47 @@ const getMessage = msg => {
 
 module.exports = {
   info(options) {
-    const { msg, time = Date.now() } =
-      typeof options === 'string' ? { msg: options } : options;
+    const { msg, time = Date.now(), prodDisable = false } = typeof options === 'string' ? { msg: options } : options;
     const timeStr = formatTime(time);
     const message = getMessage(msg);
     const logStr = `info: ${timeStr} ${message}`;
     if (isProd) {
-      prodLogger.info(logStr);
+      !prodDisable && prodLogger.info(logStr);
     } else {
       console.log(blue(logStr));
     }
   },
 
   warn(options) {
-    const { msg, time = Date.now() } =
-      typeof options === 'string' ? { msg: options } : options;
+    const { msg, time = Date.now(), prodDisable = false } = typeof options === 'string' ? { msg: options } : options;
     const timeStr = formatTime(time);
     const message = getMessage(msg);
     const logStr = `warning: ${timeStr} ${message}`;
     if (isProd) {
-      prodLogger.warn(logStr);
+      !prodDisable && prodLogger.warn(logStr);
     } else {
       console.log(yellow(logStr));
     }
   },
 
   error(options) {
-    const { msg, time = Date.now() } =
-      typeof options === 'string' ? { msg: options } : options;
+    const { msg, time = Date.now(), prodDisable = false } = typeof options === 'string' ? { msg: options } : options;
     const timeStr = formatTime(time);
     const message = getMessage(msg);
     const logStr = `error: ${timeStr} ${message}`;
     if (isProd) {
-      prodLogger.error(logStr);
+      !prodDisable && prodLogger.error(logStr);
     } else {
       console.log(red(logStr));
     }
   },
 
   ssr(options) {
-    const { msg, type, time = Date.now() } = options;
+    const { msg, type, time = Date.now(), prodDisable = false } = options;
     const timeStr = formatTime(time);
     const logStr = `${timeStr}: ssr ${type} ${msg}`;
     if (isProd) {
-      prodLogger.ssr(logStr, type);
+      !prodDisable && prodLogger.ssr(logStr, type);
     } else {
       let render;
       switch (type) {
@@ -89,7 +86,7 @@ module.exports = {
   },
 
   api(options) {
-    const { msg, type, startTime, endTime, error, proxy = false } = options;
+    const { msg, type, startTime, endTime, error, proxy = false, prodDisable = false } = options;
     const startTimeStr = formatTime(startTime);
     const endTimeStr = formatTime(endTime);
     const duringTime = endTime - startTime;
@@ -102,7 +99,7 @@ module.exports = {
       logStr = `${logStr} error ${getMessage(error)}`;
     }
     if (isProd) {
-      prodLogger.api(logStr, type);
+      !prodDisable && prodLogger.api(logStr, type);
     } else {
       const render = type === 'success' ? cyan : magenta;
       console.log(render(logStr));

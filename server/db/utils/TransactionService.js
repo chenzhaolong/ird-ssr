@@ -5,6 +5,7 @@
 import { isFunction, isString, isArray, isObject } from 'lodash';
 import SqlService from './SqlService';
 
+const Logger = require('../../utils/loggerUtils');
 const TransactionStatus = {
   START: 'start',
   UNSTART: 'unStart',
@@ -29,24 +30,35 @@ export default class TransactionService {
     return new Promise((resolve, reject) => {
       this.transaction.beginTransaction(err => {
         if (err) {
-          console.log(err);
+          Logger.error(`transaction start fail ${err.message}.`);
           this.status = TransactionStatus.STARTFAIL;
-          reject(false);
+          reject(err);
         } else {
+          Logger.info('transaction start.');
           this.status = TransactionStatus.START;
-          resolve(true);
+          resolve();
         }
       });
     });
   }
 
   rollback() {
-    this.transaction.rollback(() => {
-      this.release();
+    return new Promise((resolve, reject) => {
+      this.transaction.rollback(err => {
+        if (err) {
+          Logger.error(`transaction rollback fail ${err.message}.`);
+          reject(err);
+        } else {
+          Logger.info('transaction rollback.');
+          resolve();
+        }
+        this.release();
+      });
     });
   }
 
   release() {
+    Logger.info('transaction release.');
     this.status = TransactionStatus.RELEASE;
     this.transaction.release();
   }
@@ -55,9 +67,11 @@ export default class TransactionService {
     return new Promise((resolve, reject) => {
       this.transaction.commit(err => {
         if (err) {
+          Logger.error(`transaction commit fail ${err.message}.`);
           this.release();
           reject(err);
         } else {
+          Logger.info('transaction commit.');
           this.release();
           resolve(this.result);
         }
@@ -229,10 +243,10 @@ export default class TransactionService {
       }
       const cb = (err, result) => {
         if (err) {
-          console.log(err);
-          resolve(false);
+          reject(err);
         } else {
           this.result = result;
+          Logger.info('sql execute success.');
           resolve(true);
         }
       };

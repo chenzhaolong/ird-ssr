@@ -3,16 +3,14 @@
  */
 
 import Mysql from 'mysql';
-import Emitter from 'events';
 import TransactionService from './TransactionService';
 import DBService from './DBService';
 
 const mysqlConfig = require('../../../config/env').mysql;
 const Logger = require('../../utils/loggerUtils');
 
-export default class DBPoolService extends Emitter {
+export default class DBPoolService {
   constructor() {
-    super();
     const { host, user, password, database, poolNumbers } = mysqlConfig;
     this.instancePool = Mysql.createPool({
       connectionLimit: poolNumbers, //连接池连接数
@@ -28,7 +26,7 @@ export default class DBPoolService extends Emitter {
       this.instancePool.getConnection((err, connection) => {
         if (err) {
           Logger.error(`getTransactionConnection error: ${err.message}`);
-          reject(false);
+          reject(err);
         } else {
           Logger.info('pool connect success');
           resolve(new TransactionService(connection));
