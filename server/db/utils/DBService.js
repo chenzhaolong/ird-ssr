@@ -18,7 +18,7 @@ export default class DBService extends Emitter {
     this.database = database;
     this.instance = instance || null;
     this.sql = instance ? new SqlService() : null;
-    this.status = instance ? 'success' : 'unconnect';
+    this.status = instance ? 'success' : 'unConnect';
     this.isPoolConnect = instance && true;
     // this.DBEvents = {
     //     FAIL: 'fail',
@@ -58,9 +58,18 @@ export default class DBService extends Emitter {
     return this.status === 'success';
   }
 
-  end() {
-    // this.emit('end');
-    this.instance.end();
+  end(fn) {
+    this.status = 'unConnect';
+    return new Promise((resolve, reject) => {
+      this.instance.end(err => {
+        if (err) {
+          reject(err);
+        } else {
+          isFunction(fn) && fn();
+          resolve();
+        }
+      });
+    });
   }
 
   hasTables(table) {
