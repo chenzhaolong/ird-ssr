@@ -14,12 +14,8 @@ export default async (ctx, next) => {
   const path = get(ctx, 'request.url', '');
   if (path && apiPrefix && path.indexOf(apiPrefix) !== -1) {
     try {
-      const response = await proxy(
-        ctx,
-        { to: path, host: chooseProxyHost(ctx, path) },
-        {},
-      );
-      ctx.body = ctx.makeBody(response);
+      const response = await proxy(ctx, { to: path, host: chooseProxyHost(ctx, path) }, {});
+      ctx.body = ctx.makeBody(ctx, response);
     } catch (err) {
       ctx.body = err;
     }

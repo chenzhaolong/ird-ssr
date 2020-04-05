@@ -7,22 +7,13 @@ import { get, isArray, isFunction } from 'lodash';
 import proxy from '../../utils/proxy';
 import proxyApis from '../../routes/proxyApi';
 
-const MockServer =
-  process.env.NODE_ENV === 'production' ? {} : require('../../../mock');
+const MockServer = process.env.NODE_ENV === 'production' ? {} : require('../../../mock');
 const config = require('../../../config/env');
 const router = new KoaRouter({ prefix: config.server.apiPrefix });
 
 function registerRoute() {
   routes.forEach(routeConfig => {
-    const {
-      url,
-      action,
-      method,
-      from,
-      to,
-      code,
-      mockable = false,
-    } = routeConfig;
+    const { url, action, method, from, to, code, mockable = false } = routeConfig;
     // 重定向
     if (from && to && code) {
       router.redirect(from, to, code);
@@ -54,15 +45,10 @@ function registerProxyRoute() {
         router[method](path, async (ctx, next) => {
           try {
             // 如存在group
-            let promise =
-              isArray(item.group) && item.group.length > 0
-                ? getMulProxy
-                : proxy;
+            let promise = isArray(item.group) && item.group.length > 0 ? getMulProxy : proxy;
             const response = await promise(ctx, item);
-            const body = isFunction(extraAction)
-              ? extraAction(ctx, response)
-              : response;
-            ctx.body = ctx.makeBody(body);
+            const body = isFunction(extraAction) ? extraAction(ctx, response) : response;
+            ctx.body = ctx.makeBody(ctx, body);
           } catch (err) {
             ctx.body = isFunction(extraError) ? extraError(ctx, err) : err;
           }
