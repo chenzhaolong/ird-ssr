@@ -4,7 +4,6 @@
 import { beforeBizMW, afterBizMW } from './middleware/base';
 import staticServer from 'koa-static';
 import ErrorHandle from './utils/errorHandle';
-import { get } from 'lodash';
 
 const path = require('path');
 const Koa = require('koa');
@@ -18,17 +17,7 @@ const app = new Koa();
 app.context.logger = LoggerUtils;
 
 /*** 定义接口返回结构 ***/
-app.context.makeBody = function(ctx, response, code, msg) {
-  const url = get(ctx, 'request.url');
-  const method = get(ctx, 'method', 'get');
-  let body = get(ctx, `request.${method === 'get' ? 'query' : 'body'}`, {});
-  const header = get(ctx, 'request.header', {});
-  LoggerUtils.api({
-    type: 'success',
-    msg: `url ${url} body ${JSON.stringify(body)} header ${JSON.stringify(header)} response ${JSON.stringify(response)}`,
-    startTime: ctx.statistics.requestTime,
-    endTime: Date.now(),
-  });
+app.context.makeBody = function(response, code, msg) {
   return {
     code: code || 200,
     data: response,

@@ -20,7 +20,7 @@ const formatTime = time => {
 };
 
 const getMessage = msg => {
-  return typeof msg === 'string' ? msg : JSON.stringify(msg);
+  return typeof msg === 'string' ? msg : JSON.stringify(msg.message);
 };
 
 module.exports = {
@@ -90,9 +90,7 @@ module.exports = {
     const startTimeStr = formatTime(startTime);
     const endTimeStr = formatTime(endTime);
     const duringTime = endTime - startTime;
-    let logStr = `${endTimeStr} ${
-      proxy ? 'proxy' : ''
-    } status ${type} ${msg} startTime ${startTimeStr} endTime ${endTimeStr}`;
+    let logStr = `${endTimeStr} ${proxy ? 'proxy' : ''} status ${type} ${msg} startTime ${startTimeStr} endTime ${endTimeStr}`;
     if (type === 'success') {
       logStr = `${logStr} duringTime ${duringTime} ms`;
     } else if (type === 'error') {

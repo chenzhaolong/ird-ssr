@@ -2,7 +2,7 @@
  * @file 用户行为日志展示-自动打印
  */
 import moment from 'moment';
-import { get } from 'lodash';
+import { get, isString } from 'lodash';
 
 let logger;
 if (process.env.NODE_ENV === 'production') {
@@ -15,23 +15,19 @@ if (process.env.NODE_ENV === 'production') {
       // 请求日志
       ctx.logger.api({
         type: 'wait',
-        msg: `url ${url} body ${JSON.stringify(body)} header ${JSON.stringify(
-          header,
-        )}`,
+        msg: `url ${url} body ${JSON.stringify(body)} header ${JSON.stringify(header)}`,
         startTime: ctx.statistics.requestTime,
         endTime: Date.now(),
       });
       await next();
       // 响应日志
       let response = get(ctx, 'response.body');
-      if (response.indexOf('DOCTYPE') !== -1) {
+      if (isString(response) && response.indexOf('DOCTYPE') !== -1) {
         response = '';
       }
       ctx.logger.api({
         type: 'success',
-        msg: `url ${url} body ${JSON.stringify(body)} header ${JSON.stringify(
-          header,
-        )} response ${JSON.stringify(response)}`,
+        msg: `url ${url} body ${JSON.stringify(body)} header ${JSON.stringify(header)} response ${JSON.stringify(response)}`,
         startTime: ctx.statistics.requestTime,
         endTime: Date.now(),
       });
@@ -39,9 +35,7 @@ if (process.env.NODE_ENV === 'production') {
       // 错误日志
       ctx.logger.api({
         type: 'error',
-        msg: `url ${url} body ${JSON.stringify(body)} header ${JSON.stringify(
-          header,
-        )}`,
+        msg: `url ${url} body ${JSON.stringify(body)} header ${JSON.stringify(header)}`,
         startTime: ctx.statistics.requestTime,
         endTime: Date.now(),
         error: err,

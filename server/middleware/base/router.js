@@ -48,7 +48,7 @@ function registerProxyRoute() {
             let promise = isArray(item.group) && item.group.length > 0 ? getMulProxy : proxy;
             const response = await promise(ctx, item);
             const body = isFunction(extraAction) ? extraAction(ctx, response) : response;
-            ctx.body = ctx.makeBody(ctx, body);
+            ctx.body = ctx.makeBody(body);
           } catch (err) {
             ctx.body = isFunction(extraError) ? extraError(ctx, err) : err;
           }

@@ -10,7 +10,7 @@ class MockServer {
     const target = Object.keys(MockServer.mapping).filter(value => url.indexOf(value) !== -1);
     const response = target.length > 0 ? MockServer.mapping[target[0]] : {};
     ctx.logger.info(`${url} return mock data ${JSON.stringify(response)}`);
-    ctx.body = ctx.makeBody(ctx, response);
+    ctx.body = ctx.makeBody(response);
   }
 }
 
