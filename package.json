@@ -1,7 +1,7 @@
 {
-  "name": "vue-ssr-template",
+  "name": "ird-ssr",
   "version": "1.0.0",
-  "description": "vue-ssr-template",
+  "description": "ird-ssr",
   "main": "index.js",
   "scripts": {
     "eslint": "eslint --ext .js --fix ./client ./server ./entry",
@@ -14,17 +14,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chenzhaolong/vue-ssr-template.git"
+    "url": "git+https://github.com/chenzhaolong/ird-ssr.git"
   },
   "keywords": [
-    "vue-ssr-template"
+    "ird-ssr"
   ],
   "author": "dragonchen",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/chenzhaolong/vue-ssr-template/issues"
+    "url": "https://github.com/chenzhaolong/vue-ird-ssr-template/issues"
   },
-  "homepage": "https://github.com/chenzhaolong/vue-ssr-template#readme",
+  "homepage": "https://github.com/chenzhaolong/ird-ssr#readme",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"

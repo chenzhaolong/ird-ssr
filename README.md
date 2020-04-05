@@ -1,1 +1,1 @@
-# vue-ssr-template
+# ird-ssr
