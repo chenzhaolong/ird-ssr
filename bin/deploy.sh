@@ -2,7 +2,11 @@
 
 #当前环境是否存在node环境
 existNode() {
-  echo 'node'
+    isExist=$(command -v node)
+    if [ "$isExist" == "" ];then
+      echo 'please install node and npm'
+      exit 1
+    fi
 }
 
 #是否存在依赖包
@@ -30,7 +34,9 @@ existPm2() {
 }
 
 run() {
+  existNode
   existPm2
+  existDependencies
 
   cmd="start"
   if [ "$1" != "" ];then

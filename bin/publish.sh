@@ -4,9 +4,7 @@
 DLL="NO"
 
 # param -m: 编译模式
-# m=client: 只重新编译客户端代码
-# m=ssr：只重新编译ssr的代码
-# m=server：只重新编译服务端代码
+# m=asset：只编译静态资源
 # m=all：重新编译全部，默认值
 MODE="all"
 
@@ -28,12 +26,9 @@ runDll() {
 
 compiler() {
   case $MODE in
-    client)
+    asset)
        npm run client prod;;
-    ssr)
        npm run ssr;;
-    server)
-       npm run server:prod;;
     *)
       npm run client prod
       npm run ssr
