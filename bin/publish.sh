@@ -14,6 +14,9 @@ MODE="all"
 # v=major：大版本改造类型，只修改package.json中version的中间位
 VERSION="patch"
 
+# 是否打成压缩包，只支持json配置
+IsPack=""
+
 PUBLISH_FILE="./publish.json"
 
 source ./bin/installEnv.sh
@@ -75,6 +78,7 @@ publish() {
         DLL=$(jq .dll $PUBLISH_FILE | sed 's/\"//g')
         MODE=$(jq .mode $PUBLISH_FILE | sed 's/\"//g')
         VERSION=$(jq .version $PUBLISH_FILE | sed 's/\"//g')
+        IsPack=$(jq .pack $PUBLISH_FILE | sed 's/\"//g')
      else
         isParseParams="yes"
      fi
@@ -117,7 +121,9 @@ publish() {
    runDll
    compiler
    moveFile
-   makePack
+   if [ $IsPack == "yes" ];then
+      makePack
+   fi
 }
 
 publish $1 $2 $3 $4 $5

@@ -1,5 +1,6 @@
 {
   "mode": "all",
   "dll": "YES",
-  "version": "minor"
+  "version": "patch",
+  "pack": "yes"
 }
