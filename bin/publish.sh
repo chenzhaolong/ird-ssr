@@ -14,12 +14,9 @@ MODE="all"
 # v=major：大版本改造类型，只修改package.json中version的中间位
 VERSION="patch"
 
-# 下载依赖
-installNpm() {
-  if [ ! \( -d ./node_modules \) ];then
-    npm i
-  fi
-}
+PUBLISH_FILE="./publish.json"
+
+source ./bin/installEnv.sh
 
 # 生成dll文件
 runDll() {
@@ -63,36 +60,62 @@ updateVersion() {
    npm version $VERSION
 }
 
-// 执行发布
+# 执行发布
 publish() {
-   while [ -n "$1" ]
-   do
-     case "$1" in
-     -d)
-        DLL="YES"
-        shift;;
-     -m)
-        if [ -n "$2" ];then
-          MODE="$2"
-          shift
-        fi;;
-     -v)
-         if [ -n "$2" ];then
-           VERSION="$2"
-           shift
-         fi;;
-     *) shift;;
-    esac
-   done
+   isParseParams="no"
+
+   # 安装依赖
+   installNpm
+   installJq
+   isExistJq=$(isExist jq)
+
+   # 解析publish.json文件
+   if [ "$isExistJq" != "" ];then
+     if [ -f $PUBLISH_FILE ];then
+        DLL=$(jq .dll $PUBLISH_FILE | sed 's/\"//g')
+        MODE=$(jq .mode $PUBLISH_FILE | sed 's/\"//g')
+        VERSION=$(jq .version $PUBLISH_FILE | sed 's/\"//g')
+     else
+        isParseParams="yes"
+     fi
+   else
+     isParseParams="yes"
+   fi
+
+   # 解析命令行传入的参数
+   if [ $isParseParams == "yes" ];then
+      while [ -n "$1" ]
+        do
+          case "$1" in
+          -d)
+             DLL="YES"
+             shift;;
+          -m)
+             if [ -n "$2" ];then
+               MODE="$2"
+               shift
+             fi;;
+          -v)
+             if [ -n "$2" ];then
+               VERSION="$2"
+               shift
+             fi;;
+          *) shift;;
+        esac
+      done
+   fi
+
+   echo MODE:$MODE
+   echo DLL:$DLL
+   echo VERSION:$VERSION
+   updateVersion
 
    if [ ! \( -d ./output \) ];then
      mkdir ./output
    fi
 
-   installNpm
    runDll
    compiler
-   updateVersion
    moveFile
    makePack
 }
