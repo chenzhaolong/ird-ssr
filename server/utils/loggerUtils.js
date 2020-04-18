@@ -8,10 +8,16 @@
  * todo:后续进一步优化日志，支持更多的扩展
  */
 import moment from 'moment';
-import colors from 'colors';
 import prodLogger from './proLogger';
 
 const isProd = process.env.NODE_ENV === 'production';
+
+let colors;
+if (isProd) {
+  colors = {};
+} else {
+  colors = require('colors');
+}
 
 const { red, green, yellow, blue, magenta, cyan } = colors;
 

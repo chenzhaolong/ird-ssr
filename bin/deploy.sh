@@ -17,7 +17,10 @@ existNode() {
 #是否存在依赖包
 existDependencies() {
   #if [ ! -d ./node_modules ];then
-     npm i --production
+  if [ ! -f ./package.json ];then
+     cd ..
+  fi
+  npm i --production
   #fi
 }
 
