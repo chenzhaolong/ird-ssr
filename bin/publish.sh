@@ -12,10 +12,11 @@ MODE="all"
 # v=patch：迭代和修复类型，只修改package.json中version的最后一位，默认
 # v=minor：大需求类型，只修改package.json中version的中间位
 # v=major：大版本改造类型，只修改package.json中version的中间位
+# v=""：不执行版本更新
 VERSION="patch"
 
-# 是否打成压缩包，只支持json配置
-IsPack=""
+# param：是否采用命令行输入的参数为主
+CLOSE_JSON="no"
 
 PUBLISH_FILE="./publish.json"
 
@@ -60,7 +61,9 @@ makePack() {
 
 # 更新版本号
 updateVersion() {
-   npm version $VERSION
+   if [ $VERSION != "" ];then
+     npm version $VERSION
+   fi
 }
 
 # 执行发布
@@ -73,7 +76,7 @@ publish() {
    isExistJq=$(isExist jq)
 
    # 解析publish.json文件
-   if [ "$isExistJq" != "" ];then
+   if [ "$isExistJq" != "" ]&&[ "$CLOSE_JSON" == "no" ];then
      if [ -f $PUBLISH_FILE ];then
         DLL=$(jq .dll $PUBLISH_FILE | sed 's/\"//g')
         MODE=$(jq .mode $PUBLISH_FILE | sed 's/\"//g')
