@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # param -d:重新编译vendor.dll.js和vendor-manifest.json，默认是不开启
-DLL="NO"
+DLL="no"
 
 # param -m: 编译模式
 # m=asset：只编译静态资源
@@ -24,7 +24,7 @@ source ./bin/installEnv.sh
 
 # 生成dll文件
 runDll() {
-  if [ $DLL = "YES" ];then
+  if [ $DLL = "yes" ];then
     npm run dll
   else
    if [ ! \( -f ./output/static/dll/vendor-manifest.json \) ];then
@@ -61,7 +61,7 @@ makePack() {
 
 # 更新版本号
 updateVersion() {
-   if [ $VERSION != "" ];then
+   if [ "$VERSION" != "" ];then
      npm version $VERSION
    fi
 }
@@ -95,7 +95,7 @@ publish() {
         do
           case "$1" in
           -d)
-             DLL="YES"
+             DLL="yes"
              shift;;
           -m)
              if [ -n "$2" ];then

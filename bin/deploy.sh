@@ -4,16 +4,21 @@
 existNode() {
     isExist=$(command -v node)
     if [ "$isExist" == "" ];then
-      echo 'please install node and npm'
+      echo 'please install node'
+      exit 1
+    fi
+    isExistNpm=$(command -v npm)
+    if [ "$isExistNpm" == "" ];then
+      echo 'please install npm'
       exit 1
     fi
 }
 
 #是否存在依赖包
 existDependencies() {
-  if [ ! \( -d ./node_modules \) -a ! \( -d ../node_modules \) ];then
+  #if [ ! -d ./node_modules ];then
      npm i --production
-  fi
+  #fi
 }
 
 #获取应用名称
@@ -28,7 +33,7 @@ getName() {
 existPm2() {
   isExist=$(command -v pm2)
   if [ "$isExist" == "" ];then
-    npm i pm2
+    npm install pm2 -g
     pm2 install pm2-intercom
   fi
 }
