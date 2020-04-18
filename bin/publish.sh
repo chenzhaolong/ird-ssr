@@ -15,6 +15,11 @@ MODE="all"
 # v=""：不执行版本更新
 VERSION="patch"
 
+# param -pi: 是否本地打包完后预先下载相关依赖
+# pi=no: 不需要，在执行deploy脚本是npm i
+# pi=yes：需要，在编译完后下载npm i，执行deploy时不需要下载
+PRE_INSTALL="no"
+
 # param：是否采用命令行输入的参数为主
 CLOSE_JSON="no"
 
@@ -66,6 +71,14 @@ updateVersion() {
    fi
 }
 
+# 预先下载资源
+preInstallSource() {
+  if [ "$PRE_INSTALL" == "yes" ];then
+    cd ./output && npm i --production
+    cd ../
+  fi
+}
+
 # 执行发布
 publish() {
    isParseParams="no"
@@ -82,6 +95,7 @@ publish() {
         MODE=$(jq .mode $PUBLISH_FILE | sed 's/\"//g')
         VERSION=$(jq .version $PUBLISH_FILE | sed 's/\"//g')
         IsPack=$(jq .pack $PUBLISH_FILE | sed 's/\"//g')
+        PRE_INSTALL=$(jq .pi $PUBLISH_FILE | sed 's/\"//g')
      else
         isParseParams="yes"
      fi
@@ -107,6 +121,11 @@ publish() {
                VERSION="$2"
                shift
              fi;;
+          -pi)
+             if [ -n "$2" ];then
+               PRE_INSTALL="$2"
+               shift
+            fi;;
           *) shift;;
         esac
       done
@@ -115,6 +134,8 @@ publish() {
    echo MODE:$MODE
    echo DLL:$DLL
    echo VERSION:$VERSION
+   echo IsPack:$IsPack
+   echo PRE_INSTALL:$PRE_INSTALL
    updateVersion
 
    if [ ! \( -d ./output \) ];then
@@ -124,6 +145,7 @@ publish() {
    runDll
    compiler
    moveFile
+   preInstallSource
    if [ $IsPack == "yes" ];then
       makePack
    fi

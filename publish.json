@@ -1,6 +1,7 @@
 {
   "mode": "all",
-  "dll": "YES",
-  "version": "patch",
-  "pack": "yes"
+  "dll": "yes",
+  "version": "",
+  "pack": "yes",
+  "pi": "yes"
 }

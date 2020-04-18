@@ -16,12 +16,15 @@ existNode() {
 
 #是否存在依赖包
 existDependencies() {
-  #if [ ! -d ./node_modules ];then
   if [ ! -f ./package.json ];then
-     cd ..
+     cd ./output
   fi
-  npm i --production
-  #fi
+  if [ ! -d ./node_modules ];then
+     npm i --production
+  fi
+  if [ -f ./package.json ];then
+       cd ../
+  fi
 }
 
 #获取应用名称
