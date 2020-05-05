@@ -3,6 +3,7 @@
  */
 import { beforeBizMW, afterBizMW } from './middleware/base';
 import staticServer from 'koa-static';
+import rTracer from 'cls-rtracer';
 import ErrorHandle from './utils/errorHandle';
 
 const path = require('path');
@@ -35,6 +36,14 @@ app.use(resource);
 //   await next();
 //   ctx.logger.info({msg: 'here'});
 // });
+
+/**** 跟踪id注入 ****/
+app.use(
+  rTracer.koaMiddleware({
+    useHeader: true,
+    headerName: config.requestID,
+  }),
+);
 
 /*** 业务中间件注册之前 *****/
 beforeBizMW(app);

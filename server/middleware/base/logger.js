@@ -3,6 +3,7 @@
  */
 import moment from 'moment';
 import { get, isString } from 'lodash';
+import rTracer from 'cls-rtracer';
 
 let logger;
 if (process.env.NODE_ENV === 'production') {
@@ -47,7 +48,7 @@ if (process.env.NODE_ENV === 'production') {
   // dev环境的日志输出
   const loggerFormatForDev = (str, args) => {
     const date = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
-    console.log(date + str);
+    console.log(`${date} ${str} requestID ${rTracer.id()}`);
   };
   logger = KoaLogger(loggerFormatForDev);
 }

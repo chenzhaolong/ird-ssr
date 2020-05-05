@@ -9,6 +9,7 @@
  */
 import moment from 'moment';
 import prodLogger from './proLogger';
+import rTracer from 'cls-rtracer';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -29,12 +30,20 @@ const getMessage = msg => {
   return typeof msg === 'string' ? msg : JSON.stringify(msg.message);
 };
 
+const getRequestID = closeRequestId => {
+  if (closeRequestId) {
+    return '';
+  }
+  return `requestID ${rTracer.id() || ''}`;
+};
+
 module.exports = {
   info(options) {
-    const { msg, time = Date.now(), prodDisable = false } = typeof options === 'string' ? { msg: options } : options;
+    const { msg, time = Date.now(), prodDisable = false, closeRequestId = false } = typeof options === 'string' ? { msg: options } : options;
     const timeStr = formatTime(time);
     const message = getMessage(msg);
-    const logStr = `info: ${timeStr} ${message}`;
+    const requestID = getRequestID(closeRequestId);
+    const logStr = `info: ${timeStr} ${requestID} ${message}`;
     if (isProd) {
       !prodDisable && prodLogger.info(logStr);
     } else {
@@ -43,10 +52,11 @@ module.exports = {
   },
 
   warn(options) {
-    const { msg, time = Date.now(), prodDisable = false } = typeof options === 'string' ? { msg: options } : options;
+    const { msg, time = Date.now(), prodDisable = false, closeRequestId = false } = typeof options === 'string' ? { msg: options } : options;
     const timeStr = formatTime(time);
     const message = getMessage(msg);
-    const logStr = `warning: ${timeStr} ${message}`;
+    const requestID = getRequestID(closeRequestId);
+    const logStr = `warning: ${timeStr} ${requestID} ${message}`;
     if (isProd) {
       !prodDisable && prodLogger.warn(logStr);
     } else {
@@ -55,10 +65,11 @@ module.exports = {
   },
 
   error(options) {
-    const { msg, time = Date.now(), prodDisable = false } = typeof options === 'string' ? { msg: options } : options;
+    const { msg, time = Date.now(), prodDisable = false, closeRequestId = false } = typeof options === 'string' ? { msg: options } : options;
     const timeStr = formatTime(time);
     const message = getMessage(msg);
-    const logStr = `error: ${timeStr} ${message}`;
+    const requestID = getRequestID(closeRequestId);
+    const logStr = `error: ${timeStr} ${requestID} ${message}`;
     if (isProd) {
       !prodDisable && prodLogger.error(logStr);
     } else {
@@ -67,9 +78,10 @@ module.exports = {
   },
 
   ssr(options) {
-    const { msg, type, time = Date.now(), prodDisable = false } = options;
+    const { msg, type, time = Date.now(), prodDisable = false, closeRequestId = false } = options;
     const timeStr = formatTime(time);
-    const logStr = `${timeStr}: ssr ${type} ${msg}`;
+    const requestID = getRequestID(closeRequestId);
+    const logStr = `${timeStr}: ${requestID} ssr ${type} ${msg}`;
     if (isProd) {
       !prodDisable && prodLogger.ssr(logStr, type);
     } else {
@@ -92,11 +104,12 @@ module.exports = {
   },
 
   api(options) {
-    const { msg, type, startTime, endTime, error, proxy = false, prodDisable = false } = options;
+    const { msg, type, startTime, endTime, error, proxy = false, prodDisable = false, closeRequestId = false } = options;
     const startTimeStr = formatTime(startTime);
     const endTimeStr = formatTime(endTime);
     const duringTime = endTime - startTime;
-    let logStr = `${endTimeStr} ${proxy ? 'proxy' : ''} status ${type} ${msg} startTime ${startTimeStr} endTime ${endTimeStr}`;
+    const requestID = getRequestID(closeRequestId);
+    let logStr = `${endTimeStr} ${proxy ? 'proxy' : ''} status ${type} ${requestID} ${msg} startTime ${startTimeStr} endTime ${endTimeStr}`;
     if (type === 'success') {
       logStr = `${logStr} duringTime ${duringTime} ms`;
     } else if (type === 'error') {

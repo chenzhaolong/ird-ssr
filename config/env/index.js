@@ -29,6 +29,7 @@ module.exports = {
       apiPrefix: '',
       timeout: 5000,
     },
+    requestID: 'X-Request-Id',
   },
 
   mysql: {

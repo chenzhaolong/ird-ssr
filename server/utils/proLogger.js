@@ -1,5 +1,5 @@
 /**
- * @生产环境下log4的封装
+ * @file: 生产环境下log4的封装
  */
 
 const log4js = require('log4js');
