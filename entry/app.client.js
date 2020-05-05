@@ -21,6 +21,25 @@ function getQuery() {
   return obj;
 }
 
+// 挂载，如果是csr或者是平滑降级的csr，执行preFetch
+function getPrefetchByCsr() {
+  PrefetchService.clientPrefetch(
+    router,
+    {
+      path: window.location.pathname,
+      query: getQuery(),
+      hash: window.location.hash,
+    },
+    store,
+  )
+    .then(d => {
+      app.$mount('#app');
+    })
+    .catch(e => {
+      app.$mount('#app');
+    });
+}
+
 // 服务端渲染的store替换客户端的store
 if (window.__INITIAL_STATE__) {
   store.replaceState(window.__INITIAL_STATE__);
@@ -39,21 +58,7 @@ router.beforeEach((to, from, next) => {
 
 // 挂载，如果是csr或者是平滑降级的csr，执行preFetch
 if (window._ssrDemotion && window._ssrDemotion === 'yes') {
-  PrefetchService.clientPrefetch(
-    router,
-    {
-      path: window.location.pathname,
-      query: getQuery(),
-      hash: window.location.hash,
-    },
-    store,
-  )
-    .then(d => {
-      app.$mount('#app');
-    })
-    .catch(e => {
-      app.$mount('#app');
-    });
+  getPrefetchByCsr();
 } else {
   app.$mount('#app', true);
 }
