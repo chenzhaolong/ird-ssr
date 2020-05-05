@@ -29,13 +29,14 @@ source ./bin/installEnv.sh
 
 # 生成dll文件
 runDll() {
-  if [ $DLL = "yes" ];then
-    npm run dll
-  else
-   if [ ! \( -f ./output/static/dll/vendor-manifest.json \) ];then
-     npm run dll
-   fi
-  fi
+  #if [ $DLL = "yes" ];then
+    #npm run dll
+  #else
+   #if [ ! \( -f ./output/static/dll/vendor-manifest.json \) ];then
+     #npm run dll
+   #fi
+  #fi
+  npm run dll $DLL
 }
 
 # 编译

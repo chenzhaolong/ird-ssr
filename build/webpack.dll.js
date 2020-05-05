@@ -15,7 +15,7 @@ module.exports = {
   },
 
   output: {
-    path: path.resolve(__dirname, '../output/static/dll/'),
+    path: path.resolve(__dirname, '../config/dll/'),
     filename: '[name].dll.js',
     library: '[name]_library',
   },
@@ -23,7 +23,7 @@ module.exports = {
   plugins: [
     new webpack.DllPlugin({
       name: '[name]_library',
-      path: path.join(__dirname, '../output/static/dll', '[name]-manifest.json'),
+      path: path.join(__dirname, '../config/dll', '[name]-manifest.json'),
     }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   ],
