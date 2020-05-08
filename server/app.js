@@ -2,11 +2,9 @@
  * @file 后端应用聚合层
  */
 import { beforeBizMW, afterBizMW } from './middleware/base';
-import staticServer from 'koa-static';
 import rTracer from 'cls-rtracer';
 import ErrorHandle from './utils/errorHandle';
 
-const path = require('path');
 const Koa = require('koa');
 const LoggerUtils = require('./utils/loggerUtils');
 const config = require('../config/env').server;
@@ -25,11 +23,6 @@ app.context.makeBody = function(response, code, msg) {
     msg: msg || 'success',
   };
 };
-
-/*** 静态资源 *****/
-const staticPath = path.resolve(__dirname, '../');
-const resource = staticServer(staticPath);
-app.use(resource);
 
 /*** 错误处理注入 *****/
 // ErrorHandle.replace(async (ctx, next) => {

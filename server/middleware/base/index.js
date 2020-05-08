@@ -10,12 +10,19 @@ import transmission from './transmission';
 import SSRRender from './serverRender';
 import ErrorHandle from '../../utils/errorHandle';
 import ssrDemotion from './ssrDemotion';
+import staticServer from 'koa-static';
+
+/*** 静态资源 *****/
+const path = require('path');
+const staticPath = path.resolve(__dirname, '../../../');
+const resource = staticServer(staticPath);
 
 export function beforeBizMW(app) {
   app.use(bodyParser());
   app.use(compress());
   app.use(statistics);
   app.use(Logger);
+  app.use(resource);
   app.use(ErrorHandle.handle());
 }
 
