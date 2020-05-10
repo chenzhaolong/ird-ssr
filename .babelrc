@@ -1,5 +1,5 @@
 {
-  "presets": [["es2015", { "modules": false }]],
+  "presets": ["es2015"],
   "plugins": [
     "transform-object-rest-spread",
     "transform-async-to-generator",
@@ -14,13 +14,6 @@
         "polyfill": false,
         "regenerator": true,
         "moduleName": "babel-runtime"
-      }
-    ],
-    [
-      "component",
-      {
-        "libraryName": "element-ui",
-        "styleLibraryName": "theme-chalk"
       }
     ]
   ]
