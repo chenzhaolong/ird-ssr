@@ -32,6 +32,8 @@ module.exports = {
     requestID: 'X-Request-Id',
   },
 
+  csrWhiteList: [],
+
   mysql: {
     open: false,
     host: '',

@@ -10,6 +10,7 @@ export default async (ctx, next) => {
     isAsset: false, // 静态资源
     isApi: false, // 请求
     isPage: false, // 页面
+    isWhiteList: false, // ssr模式下该页面命中csr白名单
   };
   await next();
 };

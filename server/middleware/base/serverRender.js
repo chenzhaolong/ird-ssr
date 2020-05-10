@@ -36,6 +36,13 @@ export default async (ctx, next) => {
       type: 'info',
     };
     await next();
+  } else if (ctx.statistics.isWhiteList) {
+    ctx.statistics.isPage = true;
+    ctx.statistics.tempMsg = {
+      msg: `${ctx.request.url} is in csrWhiteList, adopt csr render.`,
+      type: 'info',
+    };
+    await next();
   } else {
     const context = {
       request: ctx.request,
