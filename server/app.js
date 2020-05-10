@@ -4,7 +4,9 @@
 import { beforeBizMW, afterBizMW } from './middleware/base';
 import rTracer from 'cls-rtracer';
 import ErrorHandle from './utils/errorHandle';
+import staticServer from 'koa-static';
 
+const path = require('path');
 const Koa = require('koa');
 const LoggerUtils = require('./utils/loggerUtils');
 const config = require('../config/env').server;
@@ -29,6 +31,11 @@ app.context.makeBody = function(response, code, msg) {
 //   await next();
 //   ctx.logger.info({msg: 'here'});
 // });
+
+/*** 静态资源 *****/
+const staticPath = path.resolve(__dirname, '../');
+const resource = staticServer(staticPath);
+app.use(resource);
 
 /**** 跟踪id注入 ****/
 app.use(
