@@ -37,6 +37,8 @@ module.exports = merge(BaseWebpack, {
     new HtmlWebpackPlugin({
       filename: 'index.template.html',
       template: path.resolve(__dirname, compilerEnv.htmlPath),
+      inject: false,
+      hash: true,
     }),
   ],
 
