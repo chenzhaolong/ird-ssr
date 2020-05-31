@@ -13,15 +13,20 @@ MODE="all"
 # v=minor：大需求类型，只修改package.json中version的中间位
 # v=major：大版本改造类型，只修改package.json中version的中间位
 # v=""：不执行版本更新
-VERSION="patch"
+VERSION=""
 
 # param -pi: 是否本地打包完后预先下载相关依赖
 # pi=no: 不需要，在执行deploy脚本是npm i
 # pi=yes：需要，在编译完后下载npm i，执行deploy时不需要下载
 PRE_INSTALL="no"
 
+# param -pa: 是否需要压缩
+# pa=no 不需要
+# pa=yes 需要
+IsPack="no"
+
 # param：是否采用命令行输入的参数为主
-CLOSE_JSON="no"
+CLOSE_JSON="yes"
 
 PUBLISH_FILE="./publish.json"
 
@@ -76,8 +81,8 @@ updateVersion() {
 preInstallSource() {
   if [ "$PRE_INSTALL" == "yes" ];then
     cd ./output && npm i --production
-    cd ../
   fi
+  cd ../
 }
 
 # 执行发布
@@ -125,6 +130,11 @@ publish() {
           -pi)
              if [ -n "$2" ];then
                PRE_INSTALL="$2"
+               shift
+            fi;;
+          -pa)
+            if [ -n "$2" ];then
+               IsPack="$2"
                shift
             fi;;
           *) shift;;

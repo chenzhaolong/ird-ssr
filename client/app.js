@@ -3,7 +3,7 @@
  */
 
 import Vue from 'vue';
-import App from './app.vue';
+import App from './App.vue';
 import { createRouter } from './routes/router';
 import { createStore } from './store/store';
 import { ClientService } from './service/clientCgiService';
