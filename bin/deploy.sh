@@ -55,7 +55,7 @@ run() {
   fi
   case $cmd in
     start)
-        pm2 start ./output/ecosystem.config.js --env production;;
+        pm2-runtime start ./output/ecosystem.config.js --env production;;
     restart)
         app=$(getName)
         pm2 restart $app;;

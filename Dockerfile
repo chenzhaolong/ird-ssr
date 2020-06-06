@@ -24,7 +24,7 @@ RUN npm install sass-loader@8.0.0 -d
 
 COPY . .
 
-RUN npm run publish
+RUN sh ./bin/publish.sh -oj yes
 
 RUN rm -rf node_modules
 
@@ -32,4 +32,4 @@ RUN cd ./output && npm i --production
 
 EXPOSE 8011
 
-ENTRYPOINT ['./work/output/deploy.sh']
+ENTRYPOINT cd ./output && sh ./deploy.sh
