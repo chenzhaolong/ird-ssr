@@ -26,7 +26,7 @@ PRE_INSTALL="no"
 IsPack="no"
 
 # param：是否采用命令行输入的参数为主
-CLOSE_JSON="yes"
+CLOSE_JSON="no"
 
 PUBLISH_FILE="./publish.json"
 
@@ -87,11 +87,47 @@ preInstallSource() {
 
 # 执行发布
 publish() {
-   isParseParams="no"
+   # 解析命令行传入的参数
+   while [ -n "$1" ]
+      do
+        case "$1" in
+        -d)
+           DLL="yes"
+           shift;;
+        -m)
+           if [ -n "$2" ];then
+             MODE="$2"
+             shift
+           fi;;
+        -v)
+           if [ -n "$2" ];then
+             VERSION="$2"
+             shift
+           fi;;
+        -pi)
+           if [ -n "$2" ];then
+             PRE_INSTALL="$2"
+             shift
+           fi;;
+        -pa)
+           if [ -n "$2" ];then
+             IsPack="$2"
+             shift
+           fi;;
+        -oj)
+           if [ -n "$2" ];then
+             CLOSE_JSON="$2"
+             shift
+           fi;;
+        *) shift;;
+      esac
+    done
 
    # 安装依赖
    installNpm
-   installJq
+   if [ "$CLOSE_JSON" == "no" ];then
+     installJq
+   fi
    isExistJq=$(isExist jq)
 
    # 解析publish.json文件
@@ -102,51 +138,15 @@ publish() {
         VERSION=$(jq .version $PUBLISH_FILE | sed 's/\"//g')
         IsPack=$(jq .pack $PUBLISH_FILE | sed 's/\"//g')
         PRE_INSTALL=$(jq .pi $PUBLISH_FILE | sed 's/\"//g')
-     else
-        isParseParams="yes"
      fi
-   else
-     isParseParams="yes"
    fi
 
-   # 解析命令行传入的参数
-   if [ $isParseParams == "yes" ];then
-      while [ -n "$1" ]
-        do
-          case "$1" in
-          -d)
-             DLL="yes"
-             shift;;
-          -m)
-             if [ -n "$2" ];then
-               MODE="$2"
-               shift
-             fi;;
-          -v)
-             if [ -n "$2" ];then
-               VERSION="$2"
-               shift
-             fi;;
-          -pi)
-             if [ -n "$2" ];then
-               PRE_INSTALL="$2"
-               shift
-            fi;;
-          -pa)
-            if [ -n "$2" ];then
-               IsPack="$2"
-               shift
-            fi;;
-          *) shift;;
-        esac
-      done
-   fi
-
-   echo MODE:$MODE
-   echo DLL:$DLL
-   echo VERSION:$VERSION
-   echo IsPack:$IsPack
-   echo PRE_INSTALL:$PRE_INSTALL
+   echo "\033[32m CLOSE_JSON:$CLOSE_JSON \033[0m"
+   echo "\033[32m MODE:$MODE \033[0m"
+   echo "\033[32m DLL:$DLL \033[0m"
+   echo "\033[32m VERSION:$VERSION \033[0m"
+   echo "\033[32m IsPack:$IsPack \033[0m"
+   echo "\033[32m PRE_INSTALL:$PRE_INSTALL \033[0m"
    updateVersion
 
    if [ ! \( -d ./output \) ];then
@@ -162,4 +162,4 @@ publish() {
    fi
 }
 
-publish $1 $2 $3 $4 $5
+publish $1 $2 $3 $4 $5 $6 $7 $8 $9 $10 $11
