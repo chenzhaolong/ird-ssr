@@ -9,7 +9,7 @@ import DBService from './DBService';
 const mysqlConfig = require('../../../config/env').mysql;
 const Logger = require('../../utils/loggerUtils');
 
-export default class DBPoolService {
+class _DBPoolService {
   constructor() {
     const { host, user, password, database, poolNumbers } = mysqlConfig;
     this.instancePool = Mysql.createPool({
@@ -49,3 +49,15 @@ export default class DBPoolService {
     });
   }
 }
+
+export const DBPoolService = (function() {
+  let instance = null;
+  return function() {
+    if (instance) {
+      return instance;
+    } else {
+      instance = new _DBPoolService();
+      return instance;
+    }
+  };
+})();
