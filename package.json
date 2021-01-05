@@ -37,7 +37,7 @@
     ]
   },
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "cls-hooked": "^4.2.2",
     "cls-rtracer": "^1.4.1",
     "cross-env": "^6.0.3",
